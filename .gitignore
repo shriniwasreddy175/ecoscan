@@ -1,0 +1,13 @@
+# Backend
+ecoscan_backend/target/
+ecoscan_backend/.idea/
+ecoscan_backend/*.log
+
+# Frontend
+ecoscan_frontend/node_modules/
+ecoscan_frontend/dist/
+
+# General
+.env
+.idea/
+*.iml
