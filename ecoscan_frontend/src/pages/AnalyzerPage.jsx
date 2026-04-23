@@ -15,7 +15,6 @@ function AnalyzerPage() {
     resetForm,
     runAnalysis,
     applyHistoryItem,
-    clearHistory,
     setError,
     setResult,
     setForm,
@@ -56,8 +55,8 @@ function AnalyzerPage() {
       <div className="history-wrap">
         <ReportHistory
           history={history}
+          loading={loading}
           onLoadItem={applyHistoryItem}
-          onClear={clearHistory}
         />
       </div>
     </section>

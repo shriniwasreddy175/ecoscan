@@ -36,12 +36,12 @@ function ProductForm({
       >
         <label>
           Product Name
-          <input name="name" value={form.name} onChange={onChange} />
+          <input name="name" value={form.name} onChange={onChange} required />
         </label>
 
         <label>
           Category
-          <select name="category" value={form.category} onChange={onChange}>
+          <select name="category" value={form.category} onChange={onChange} required>
             <option value="">Select category</option>
             {categoryOptions.map((option) => (
               <option key={option} value={option}>
@@ -53,17 +53,17 @@ function ProductForm({
 
         <label>
           Price
-          <input type="number" step="0.01" name="price" value={form.price} onChange={onChange} />
+          <input type="number" step="0.01" min="0.01" name="price" value={form.price} onChange={onChange} required />
         </label>
 
         <label>
           Weight (kg)
-          <input type="number" step="0.01" name="weight" value={form.weight} onChange={onChange} />
+          <input type="number" step="0.01" min="0.01" name="weight" value={form.weight} onChange={onChange} required />
         </label>
 
         <label>
           Material
-          <input name="material" value={form.material} onChange={onChange} />
+          <input name="material" value={form.material} onChange={onChange} required />
         </label>
 
         <label>
@@ -71,15 +71,17 @@ function ProductForm({
           <input
             type="number"
             step="1"
+            min="0"
             name="transportDistance"
             value={form.transportDistance}
             onChange={onChange}
+            required
           />
         </label>
 
         <label className="full-width">
           Description
-          <textarea name="description" rows="4" value={form.description} onChange={onChange} />
+          <textarea name="description" rows="4" value={form.description} onChange={onChange} required />
         </label>
 
         <div className="form-actions full-width">
