@@ -9,5 +9,10 @@ export const analyzeProduct = async (product) => {
     body: JSON.stringify(product),
   });
 
+if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to analyze product");
+  }
+
   return response.json();
 };

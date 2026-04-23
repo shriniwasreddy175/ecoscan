@@ -1,33 +1,22 @@
-import { useState } from "react";
-import './App.css'
-import { analyzeProduct } from "./api/productApi";
+import { Route, Routes } from "react-router-dom";
+import Navbar from "./components/layout/Navbar";
+import PageContainer from "./components/layout/PageContainer";
+import HomePage from "./pages/HomePage";
+import AnalyzerPage from "./pages/AnalyzerPage";
+import AboutPage from "./pages/AboutPage";
+import "./App.css";
 
 function App() {
-  const [result, setResult] = useState(null);
-
-  const testAPI = async () => {
-    const data = {
-      name: "Test Product",
-      category: "Clothing",
-      price: 1000,
-      weight: 1,
-      material: "Cotton",
-      description: "Organic Polyester Jacket",
-      transportDistance: 100,
-    };
-
-    const res = await analyzeProduct(data);
-    setResult(res);
-  };
-
   return (
-    <div>
-      <h1>EcoScan Dashboard</h1>
-      <button onClick={testAPI}>Analyze Product</button>
-
-      {result && (
-        <pre>{JSON.stringify(result, null, 2)}</pre>
-      )}
+    <div className="app-shell">
+      <Navbar />
+      <PageContainer>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/analyzer" element={<AnalyzerPage />} />
+          <Route path="/about" element={<AboutPage />} />
+        </Routes>
+      </PageContainer>
     </div>
   );
 }

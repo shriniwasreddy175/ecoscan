@@ -3,6 +3,7 @@ package com.project.ecoscan_backend.services;
 import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
 import com.project.ecoscan_backend.entities.Product;
 import com.project.ecoscan_backend.repositories.ProductRepository;
+import com.project.ecoscan_backend.utils.MaterialNormalizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public SustainabilityReportDTO analyzeProduct(Product product) {
 
+        String normalizedMaterial = MaterialNormalizer.normalize(product.getMaterial());
+
         var factor = carbonFactorService
-                .getByMaterial(product.getMaterial())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Material not supported"));
+                .getByMaterial(normalizedMaterial)
+                .orElseThrow(() -> new RuntimeException("Material not supported: " + product.getMaterial()));
 
         double carbon = carbonCalculationService.calculateCarbon(product.getWeight(), factor.getEmissionPerKg());
 
