@@ -18,6 +18,8 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final int MAX_HISTORY_LIMIT = 100;
+
     private final ProductRepository productRepository;
     private final CarbonFactorService carbonFactorService;
     private final CarbonCalculationService carbonCalculationService;
@@ -73,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductHistoryItemDTO> getHistory(int limit) {
-        int safeLimit = Math.min(100, Math.max(1, limit));
+        int safeLimit = Math.min(MAX_HISTORY_LIMIT, Math.max(1, limit));
         PageRequest pageRequest = PageRequest.of(0, safeLimit, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         return productRepository.findAllByOrderByCreatedAtDesc(pageRequest).stream()
@@ -106,9 +108,9 @@ public class ProductServiceImpl implements ProductService {
         double transport = transportImpactService.calculateTransportEmission(product.getTransportDistance());
         int recyclingScore = recyclingImpactService.calculateRecyclingScore(product.getMaterial());
 
-        double carbon = product.getCarbonFootprint() == null ? 0 : product.getCarbonFootprint();
-        double shadowCost = product.getShadowCost() == null ? 0 : product.getShadowCost();
-        int ecoScore = product.getEcoScore() == null ? 0 : product.getEcoScore();
+        double carbon = safeCarbon(product);
+        double shadowCost = safeShadowCost(product);
+        int ecoScore = safeEcoScore(product);
 
         int overallScore = sustainabilityIndexService.calculateOverallScore(carbon, water, energy, transport, recyclingScore);
         String sdg12 = sdgImpactService.calculateSDG12(ecoScore);
@@ -130,9 +132,9 @@ public class ProductServiceImpl implements ProductService {
         return new SustainabilityReportDTO(
                 product.getId(),
                 product.getName(),
-                product.getCarbonFootprint() == null ? 0 : product.getCarbonFootprint(),
-                product.getShadowCost() == null ? 0 : product.getShadowCost(),
-                product.getEcoScore() == null ? 0 : product.getEcoScore(),
+                safeCarbon(product),
+                safeShadowCost(product),
+                safeEcoScore(product),
                 water,
                 energy,
                 transport,
@@ -142,5 +144,17 @@ public class ProductServiceImpl implements ProductService {
                 sdg13,
                 sdg9
         );
+    }
+
+    private double safeCarbon(Product product) {
+        return product.getCarbonFootprint() == null ? 0 : product.getCarbonFootprint();
+    }
+
+    private double safeShadowCost(Product product) {
+        return product.getShadowCost() == null ? 0 : product.getShadowCost();
+    }
+
+    private int safeEcoScore(Product product) {
+        return product.getEcoScore() == null ? 0 : product.getEcoScore();
     }
 }
