@@ -1,29 +1,38 @@
-function ReportHistory({ history, onLoadItem, onClear }) {
+function ReportHistory({ history, loading, onLoadItem }) {
   return (
     <section className="card history-card">
       <div className="card-header history-header">
         <div>
           <span className="section-tag">History</span>
-          <h2>Recent Reports</h2>
+          <h2>Recent Product Reports</h2>
         </div>
-        <button className="btn btn-ghost" type="button" onClick={onClear} disabled={!history.length}>
-          Clear
-        </button>
       </div>
 
-      {!history.length ? (
-        <p className="empty-text">No saved reports yet.</p>
+      {loading ? (
+        <p className="empty-text">Loading history...</p>
+      ) : !history.length ? (
+        <p className="empty-text">No history available yet.</p>
       ) : (
         <ul className="history-list">
           {history.map((item) => (
-            <li key={item.id}>
-              <button className="history-item" type="button" onClick={() => onLoadItem(item)}>
+            <li key={item.productId}>
+              <button
+                className="history-item"
+                type="button"
+                onClick={() => onLoadItem(item)}
+              >
                 <div>
-                  <strong>{item.report?.productName || "Unknown Product"}</strong>
-                  <span>{new Date(item.createdAt).toLocaleString()}</span>
+                  <strong>{item.productName || "Unknown Product"}</strong>
+                  <span>
+                    {item.category || "Uncategorized"}
+                    {" • "}
+                    {item.createdAt
+                      ? new Date(item.createdAt).toLocaleString()
+                      : "No timestamp"}
+                  </span>
                 </div>
                 <span className="score-chip">
-                  Score {item.report?.overallSustainabilityScore ?? "-"}
+                  Score {item.overallSustainabilityScore ?? "-"}
                 </span>
               </button>
             </li>

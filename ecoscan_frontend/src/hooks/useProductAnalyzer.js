@@ -1,5 +1,9 @@
-import { useMemo, useState } from "react";
-import { analyzeProduct } from "../api/productApi";
+import { useEffect, useMemo, useState } from "react";
+import {
+  analyzeProduct,
+  fetchProductHistory,
+  fetchProductReportById,
+} from "../api/productApi";
 
 const initialForm = {
   name: "",
@@ -11,32 +15,34 @@ const initialForm = {
   description: "",
 };
 
-function readHistory() {
-  try {
-    const raw = localStorage.getItem("ecoscan_report_history");
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeHistory(history) {
-  localStorage.setItem("ecoscan_report_history", JSON.stringify(history));
-}
-
 export function useProductAnalyzer() {
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
-  const [history, setHistory] = useState(readHistory);
+  const [history, setHistory] = useState([]);
 
   const progressValue = useMemo(() => {
     if (!result?.overallSustainabilityScore) return 0;
     return Math.min(100, Math.max(0, result.overallSustainabilityScore));
   }, [result]);
+
+  const loadHistory = async (limit = 30) => {
+    setHistoryLoading(true);
+    try {
+      const items = await fetchProductHistory(limit);
+      setHistory(Array.isArray(items) ? items : []);
+    } catch (err) {
+      setError(err.message || "Failed to load history.");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,15 +54,25 @@ export function useProductAnalyzer() {
     setError("");
   };
 
-  const applyHistoryItem = (item) => {
-    setResult(item.report ?? null);
-    setForm(item.input ?? initialForm);
-    setError("");
+  const applyHistoryItem = async (item) => {
+    try {
+      const productId = item?.productId ?? item?.id;
+      if (!productId) throw new Error("Invalid history item.");
+      setLoading(true);
+      setError("");
+
+      const report = await fetchProductReportById(productId);
+      setResult(report);
+    } catch (err) {
+      setError(err.message || "Failed to load report from history.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearHistory = () => {
+    // DB-backed history: clear button in UI can be disabled or repurposed later.
     setHistory([]);
-    writeHistory([]);
   };
 
   const runAnalysis = async () => {
@@ -93,24 +109,8 @@ export function useProductAnalyzer() {
       const report = await analyzeProduct(payload);
       setResult(report);
 
-      const entry = {
-        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-        createdAt: new Date().toISOString(),
-        input: {
-          name: form.name,
-          category: form.category,
-          price: form.price,
-          weight: form.weight,
-          material: form.material,
-          transportDistance: form.transportDistance,
-          description: form.description,
-        },
-        report,
-      };
-
-      const nextHistory = [entry, ...history].slice(0, 10);
-      setHistory(nextHistory);
-      writeHistory(nextHistory);
+      // Refresh DB-backed history after new analysis
+      await loadHistory();
     } catch (err) {
       setError(err.message || "Failed to analyze product.");
     } finally {
@@ -122,6 +122,7 @@ export function useProductAnalyzer() {
     form,
     setForm,
     loading,
+    historyLoading,
     error,
     result,
     history,
@@ -133,6 +134,5 @@ export function useProductAnalyzer() {
     clearHistory,
     setError,
     setResult,
-    initialForm,
   };
 }

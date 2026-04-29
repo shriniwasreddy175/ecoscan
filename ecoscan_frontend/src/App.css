@@ -428,3 +428,62 @@ textarea:focus {
     width: 100%;
   }
 }
+.history-wrap {
+  margin-top: 18px;
+}
+
+.chart-card {
+  margin-top: 0;
+}
+
+.chart-wrap {
+  margin-top: 10px;
+  width: 100%;
+  height: 320px;
+}
+
+.history-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  width: 100%;
+  border: 1px solid rgba(20, 83, 45, 0.16);
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.history-item:hover {
+  background: #f6fcf8;
+}
+
+.history-item strong {
+  display: block;
+  color: #0f172a;
+}
+
+.history-item span {
+  color: #5c7668;
+  font-size: 0.88rem;
+}
+
+.score-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 700;
+}

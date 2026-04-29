@@ -1,12 +1,14 @@
 import ProductForm from "../components/analyzer/ProductForm";
 import ResultsPanel from "../components/analyzer/ResultsPanel";
 import ReportHistory from "../components/analyzer/ReportHistory";
+import HistoryTrendChart from "../components/analyzer/HistoryTrendChart";
 import { useProductAnalyzer } from "../hooks/useProductAnalyzer";
 
 function AnalyzerPage() {
   const {
     form,
     loading,
+    historyLoading,
     error,
     result,
     history,
@@ -15,7 +17,6 @@ function AnalyzerPage() {
     resetForm,
     runAnalysis,
     applyHistoryItem,
-    clearHistory,
     setError,
     setResult,
     setForm,
@@ -56,9 +57,13 @@ function AnalyzerPage() {
       <div className="history-wrap">
         <ReportHistory
           history={history}
+          loading={historyLoading}
           onLoadItem={applyHistoryItem}
-          onClear={clearHistory}
         />
+      </div>
+
+      <div className="history-wrap">
+        <HistoryTrendChart history={history} />
       </div>
     </section>
   );
