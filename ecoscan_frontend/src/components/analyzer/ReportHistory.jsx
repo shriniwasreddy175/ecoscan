@@ -1,4 +1,4 @@
-function ReportHistory({ history, onLoadItem, onClear }) {
+function ReportHistory({ history, loading, onLoadItem }) {
   return (
     <section className="card history-card">
       <div className="card-header history-header">
@@ -6,9 +6,6 @@ function ReportHistory({ history, onLoadItem, onClear }) {
           <span className="section-tag">History</span>
           <h2>Recent Reports</h2>
         </div>
-        <button className="btn btn-ghost" type="button" onClick={onClear} disabled={!history.length}>
-          Clear
-        </button>
       </div>
 
       {!history.length ? (
@@ -16,14 +13,21 @@ function ReportHistory({ history, onLoadItem, onClear }) {
       ) : (
         <ul className="history-list">
           {history.map((item) => (
-            <li key={item.id}>
-              <button className="history-item" type="button" onClick={() => onLoadItem(item)}>
+            <li key={item.productId}>
+              <button
+                className="history-item"
+                type="button"
+                onClick={() => onLoadItem(item)}
+                disabled={loading}
+              >
                 <div>
-                  <strong>{item.report?.productName || "Unknown Product"}</strong>
-                  <span>{new Date(item.createdAt).toLocaleString()}</span>
+                  <strong>{item.productName || "Unknown Product"}</strong>
+                  <span>
+                    {item.createdAt ? new Date(item.createdAt).toLocaleString() : "Unknown time"}
+                  </span>
                 </div>
                 <span className="score-chip">
-                  Score {item.report?.overallSustainabilityScore ?? "-"}
+                  Score {item.overallSustainabilityScore ?? "-"}
                 </span>
               </button>
             </li>

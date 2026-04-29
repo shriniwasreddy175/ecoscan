@@ -16,3 +16,25 @@ if (!response.ok) {
 
   return response.json();
 };
+
+export const fetchProductHistory = async (limit = 30) => {
+  const response = await fetch(`${BASE_URL}/history?limit=${encodeURIComponent(limit)}`);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to load history");
+  }
+
+  return response.json();
+};
+
+export const fetchProductReportById = async (id) => {
+  const response = await fetch(`${BASE_URL}/${id}/report`);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Failed to load report");
+  }
+
+  return response.json();
+};
