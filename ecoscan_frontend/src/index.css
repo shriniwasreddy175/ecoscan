@@ -1,26 +1,69 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #102015;
-  background: #eef7f1;
+  color: var(--text);
+  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --bg: #eef7f1;
+  --bg-gradient: linear-gradient(180deg, #f7fcf8 0%, #eef7f1 100%);
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-2: #ffffff;
+  --text: #102015;
+  --text-soft: #4d665b;
+  --border: rgba(16, 32, 21, 0.1);
+  --accent: #22c55e;
+  --accent-2: #16a34a;
+  --accent-soft: #dcfce7;
+  --shadow: 0 18px 40px rgba(16, 32, 21, 0.08);
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+}
+
+html[data-theme="dark"] {
+  --bg: #07110b;
+  --bg-gradient: linear-gradient(180deg, #0c1710 0%, #07110b 100%);
+  --surface: rgba(12, 23, 16, 0.88);
+  --surface-2: #0f1b14;
+  --text: #e7f4eb;
+  --text-soft: #9bb3a5;
+  --border: rgba(151, 187, 165, 0.16);
+  --accent: #4ade80;
+  --accent-2: #22c55e;
+  --accent-soft: rgba(74, 222, 128, 0.14);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  --danger-bg: rgba(127, 29, 29, 0.35);
+  --danger-text: #fecaca;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-width: 320px;
-  background: #eef7f1;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }

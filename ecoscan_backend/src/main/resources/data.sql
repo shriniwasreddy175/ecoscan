@@ -2,7 +2,7 @@ INSERT INTO carbon_factors (material, emission_per_kg)
 VALUES
 -- Textiles
 ('Cotton', 2.1),
-('Polyster',5.5),
+('Polyester',5.5),
 ('Wool', 8.0),
 ('Silk', 11.0),
 ('Nylon', 6.5),

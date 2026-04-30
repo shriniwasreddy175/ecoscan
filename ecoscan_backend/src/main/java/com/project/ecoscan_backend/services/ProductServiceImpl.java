@@ -117,6 +117,27 @@ public class ProductServiceImpl implements ProductService {
         return buildReportFromSavedProduct(product);
     }
 
+    @Override
+    public List<SustainabilityReportDTO> compareProducts(List<Long> productIds) {
+        if (productIds == null || productIds.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product IDs list cannot be empty.");
+        }
+
+        int limit = Math.min(productIds.size(), 50);
+        List<Long> safeIds = productIds.stream().limit(limit).toList();
+
+        return safeIds.stream()
+                .map(id -> {
+                    try {
+                        return getReportByProductId(id);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(report -> report != null)
+                .toList();
+    }
+
     private SustainabilityReportDTO buildReportFromSavedProduct(Product product) {
         double carbon = product.getCarbonFootprint() != null
                 ? product.getCarbonFootprint()

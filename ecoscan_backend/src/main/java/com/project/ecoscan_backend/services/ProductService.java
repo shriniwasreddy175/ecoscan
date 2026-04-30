@@ -10,4 +10,5 @@ public interface ProductService {
     SustainabilityReportDTO analyzeProduct(Product product);
     List<ProductHistoryItemDTO> getHistory(int limit);
     SustainabilityReportDTO getReportByProductId(Long productId);
+    List<SustainabilityReportDTO> compareProducts(List<Long> productIds);
 }

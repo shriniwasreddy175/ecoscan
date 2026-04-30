@@ -1,5 +1,6 @@
 package com.project.ecoscan_backend.controllers;
 
+import com.project.ecoscan_backend.dtos.ComparisonRequestDTO;
 import com.project.ecoscan_backend.dtos.ProductHistoryItemDTO;
 import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
 import com.project.ecoscan_backend.entities.Product;
@@ -34,5 +35,11 @@ public class ProductController {
     @GetMapping("/{id}/report")
     public ResponseEntity<SustainabilityReportDTO> getProductReport(@PathVariable("id") Long id) {
         return ResponseEntity.ok(productService.getReportByProductId(id));
+    }
+
+    @PostMapping("/compare")
+    public ResponseEntity<List<SustainabilityReportDTO>> compareProducts(
+            @RequestBody ComparisonRequestDTO request) {
+        return ResponseEntity.ok(productService.compareProducts(request.getProductIds()));
     }
 }
