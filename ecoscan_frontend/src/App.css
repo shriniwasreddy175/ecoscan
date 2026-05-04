@@ -588,4 +588,181 @@ textarea:focus {
   .comparison-table td {
     padding: 8px;
   }
+
+  .gamification-how-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   Gamification styles
+   ═══════════════════════════════════════════════ */
+
+/* Level card */
+.gamification-level-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.gamification-level-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.gamification-level-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.gamification-level-sub {
+  margin-top: 4px;
+  font-size: 0.88rem;
+  color: var(--text-soft);
+}
+
+.gamification-progress-track {
+  margin-top: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.gamification-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #eab308, var(--accent));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* Stats row */
+.gamification-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.gamification-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 10px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  gap: 4px;
+}
+
+.gamification-stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.gamification-stat-label {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+/* Badge grid */
+.gamification-badge-section-label {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  color: var(--text-soft);
+}
+
+.gamification-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.gamification-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  gap: 6px;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.gamification-badge--earned {
+  background: var(--accent-soft);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.gamification-badge--earned:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.gamification-badge--locked {
+  background: var(--surface-2);
+  opacity: 0.55;
+}
+
+.gamification-badge-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.gamification-badge-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.gamification-badge-hint {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
+
+/* "How it works" grid */
+.gamification-how-grid {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* CTA banner */
+.gamification-cta-banner {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.gamification-cta-link {
+  color: var(--accent-2);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .gamification-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

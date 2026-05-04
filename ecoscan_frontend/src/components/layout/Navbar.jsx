@@ -24,6 +24,7 @@ function Navbar({ theme, onToggleTheme }) {
         <NavItem to="/">Home</NavItem>
         <NavItem to="/analyzer">Analyzer</NavItem>
         <NavItem to="/compare">Compare</NavItem>
+        <NavItem to="/gamification">Rewards</NavItem>
         <NavItem to="/about">About</NavItem>
       </nav>
 

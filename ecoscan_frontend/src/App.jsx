@@ -9,6 +9,7 @@ import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
+import GamificationPage from "./pages/GamificationPage";
 import "./App.css";
 import { AuthProvider } from "./hooks/useAuth";
 
@@ -35,6 +36,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/gamification" element={<GamificationPage />} />
           </Routes>
         </PageContainer>
       </div>
