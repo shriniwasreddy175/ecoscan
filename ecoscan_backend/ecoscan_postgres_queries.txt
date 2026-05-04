@@ -123,16 +123,19 @@ CREATE TABLE IF NOT EXISTS public.carbon_factors
 select * from carbon_factors;
 DROP TABLE carbon_factors;
 
-CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    full_name VARCHAR(150) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    organization VARCHAR(150),
-    role VARCHAR(50),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS public.users
+(
+    id bigint NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+    full_name character varying(150) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(150) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    phone character varying(20) COLLATE pg_catalog."default",
+    organization character varying(150) COLLATE pg_catalog."default",
+    role character varying(50) COLLATE pg_catalog."default",
+    created_at timestamp without time zone NOT NULL DEFAULT now(),
+    updated_at timestamp without time zone,
+    CONSTRAINT users_pkey PRIMARY KEY (id),
+    CONSTRAINT users_email_key UNIQUE (email)
+)
 select * from users;
 DROP TABLE users;
