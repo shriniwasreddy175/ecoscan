@@ -1,17 +1,20 @@
 package com.project.ecoscan_backend.services;
 
-import com.project.ecoscan_backend.dtos.ProductHistoryItemDTO;
-import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
-import com.project.ecoscan_backend.entities.Product;
-import com.project.ecoscan_backend.repositories.ProductRepository;
-import com.project.ecoscan_backend.utils.MaterialNormalizer;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import com.project.ecoscan_backend.dtos.ProductHistoryItemDTO;
+import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
+import com.project.ecoscan_backend.entities.Product;
+import com.project.ecoscan_backend.repositories.ProductRepository;
+import com.project.ecoscan_backend.repositories.UserRepository;
+import com.project.ecoscan_backend.utils.MaterialNormalizer;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -27,8 +30,20 @@ public class ProductServiceImpl implements ProductService {
     private final SustainabilityIndexService sustainabilityIndexService;
     private final SDGImpactService sdgImpactService;
 
+    private final UserRepository userRepository;
+
     @Override
-    public SustainabilityReportDTO analyzeProduct(Product product) {
+    public SustainabilityReportDTO analyzeProduct(Product product, Long userId) {
+
+        // Link product to user if userId provided
+        if (userId != null) {
+            var user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "User not found with id: " + userId
+                    ));
+            product.setUser(user);
+        }
 
         String normalizedMaterial = MaterialNormalizer.normalize(product.getMaterial());
 
@@ -85,11 +100,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductHistoryItemDTO> getHistory(int limit) {
+    public List<ProductHistoryItemDTO> getHistory(int limit, Long userId) {
         int safeLimit = Math.max(1, Math.min(limit, 200));
 
-        return productRepository.findAllByOrderByIdDesc(PageRequest.of(0, safeLimit))
-                .stream()
+        var productsStream = (userId != null)
+                ? productRepository.findAllByUserIdOrderByIdDesc(userId, PageRequest.of(0, safeLimit)).stream()
+                : productRepository.findAllByOrderByIdDesc(PageRequest.of(0, safeLimit)).stream();
+
+        return productsStream
                 .map(product -> {
                     SustainabilityReportDTO report = buildReportFromSavedProduct(product);
 

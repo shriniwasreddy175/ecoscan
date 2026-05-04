@@ -1,14 +1,22 @@
 package com.project.ecoscan_backend.controllers;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.project.ecoscan_backend.dtos.ComparisonRequestDTO;
 import com.project.ecoscan_backend.dtos.ProductHistoryItemDTO;
 import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
 import com.project.ecoscan_backend.entities.Product;
 import com.project.ecoscan_backend.services.ProductService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/ecoscan/api/products")
@@ -22,14 +30,15 @@ public class ProductController {
     }
 
     @PostMapping("/analyze")
-    public SustainabilityReportDTO analyze(@RequestBody Product product) {
-        return productService.analyzeProduct(product);
+    public SustainabilityReportDTO analyze(@RequestBody Product product,
+            @RequestParam(required = false) Long userId) {
+        return productService.analyzeProduct(product, userId);
     }
 
     @GetMapping("/history")
     public ResponseEntity<List<ProductHistoryItemDTO>> getHistory(
-            @RequestParam(defaultValue = "30") int limit) {
-        return ResponseEntity.ok(productService.getHistory(limit));
+            @RequestParam(defaultValue = "30") int limit, @RequestParam(required = false) Long userId) {
+        return ResponseEntity.ok(productService.getHistory(limit, userId));
     }
 
     @GetMapping("/{id}/report")

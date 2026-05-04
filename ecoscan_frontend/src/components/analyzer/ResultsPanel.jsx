@@ -44,29 +44,29 @@ function ResultsPanel({ result, progressValue }) {
             </div>
 
             <div className="results-grid">
-              <ResultCard label="Product" value={result.productName} />
-              <ResultCard label="Product ID" value={result.productId} />
+              <ResultCard label="Product" value={result.productName ?? result.name} />
+              <ResultCard label="Product ID" value={result.productId ?? result.id} />
               <ResultCard label="Carbon Footprint" value={result.carbonFootprint} />
               <ResultCard label="Shadow Cost" value={result.shadowCost} />
               <ResultCard label="Eco Score" value={result.ecoScore} />
-              <ResultCard label="Water Footprint" value={result.waterFootprint} />
-              <ResultCard label="Energy Consumption" value={result.energyConsumption} />
-              <ResultCard label="Transport Emission" value={result.transportEmission} />
+              <ResultCard label="Water Footprint" value={result.waterFootprint ?? result.water} />
+              <ResultCard label="Energy Consumption" value={result.energyConsumption ?? result.energy} />
+              <ResultCard label="Transport Emission" value={result.transportEmission ?? result.transport} />
               <ResultCard label="Recycling Score" value={result.recyclingScore} />
             </div>
 
             <div className="sdg-grid">
               <div className="sdg-pill">
                 <span>SDG 12</span>
-                <strong>{result.sdg12Impact}</strong>
+                <strong>{result.sdg12Impact ?? result.sdg12}</strong>
               </div>
               <div className="sdg-pill">
                 <span>SDG 13</span>
-                <strong>{result.sdg13Impact}</strong>
+                <strong>{result.sdg13Impact ?? result.sdg13}</strong>
               </div>
               <div className="sdg-pill">
                 <span>SDG 9</span>
-                <strong>{result.sdg9Impact}</strong>
+                <strong>{result.sdg9Impact ?? result.sdg9}</strong>
               </div>
             </div>
           </>
