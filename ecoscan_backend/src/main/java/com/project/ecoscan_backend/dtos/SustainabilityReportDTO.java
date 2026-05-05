@@ -11,6 +11,7 @@ public class SustainabilityReportDTO {
 
     private Long productId;
     private String productName;
+    private String category;
 
     private double carbonFootprint;
     private double shadowCost;

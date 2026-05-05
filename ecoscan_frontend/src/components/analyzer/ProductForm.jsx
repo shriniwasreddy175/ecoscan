@@ -9,6 +9,100 @@ const categoryOptions = [
   "Other",
 ];
 
+const materialsByCategory = {
+  Clothing: [
+    "Cotton",
+    "Polyester",
+    "Wool",
+    "Silk",
+    "Nylon",
+    "Acrylic",
+    "Denim",
+    "Leather",
+    "Synthetic Leather",
+  ],
+  Electronics: [
+    "Glass",
+    "Silicon",
+    "Lithium",
+    "Aluminium",
+    "Recycled Aluminium",
+    "Copper",
+    "Iron",
+  ],
+  Furniture: [
+    "Plywood",
+    "MDF",
+    "Metal",
+    "Aluminium",
+    "Recycled Aluminium",
+    "Rubber",
+  ],
+  "Home & Kitchen": [
+    "Glass",
+    "Metal",
+    "Aluminium",
+    "Copper",
+    "Ceramic",
+    "Plastic",
+    "Stainless Steel",
+  ],
+  Cosmetics: [
+    "Glass",
+    "Plastic",
+    "Aluminium",
+    "Paper",
+    "Recycled Paper",
+  ],
+  Accessories: [
+    "Leather",
+    "Synthetic Leather",
+    "Plastic",
+    "Metal",
+    "Polyester",
+    "Cotton",
+  ],
+  Furniture: [
+    "Plywood",
+    "MDF",
+    "Metal",
+    "Rubber",
+    "Fabric",
+    "Foam",
+  ],
+};
+
+const allMaterials = [
+  "Cotton",
+  "Polyester",
+  "Wool",
+  "Silk",
+  "Nylon",
+  "Acrylic",
+  "Denim",
+  "Recycled Plastic",
+  "PVC",
+  "Polypropylene",
+  "Bioplastic",
+  "Aluminium",
+  "Recycled Aluminium",
+  "Copper",
+  "Iron",
+  "Plywood",
+  "MDF",
+  "Paper",
+  "Recycled Paper",
+  "Cardboard",
+  "Glass",
+  "Silicon",
+  "Lithium",
+  "Packaging Plastic",
+  "Packaging Paper",
+  "Rubber",
+  "Leather",
+  "Synthetic Leather",
+];
+
 function ProductForm({
   form,
   loading,
@@ -63,7 +157,17 @@ function ProductForm({
 
         <label>
           Material
-          <input name="material" value={form.material} onChange={onChange} />
+          <select name="material" value={form.material} onChange={onChange}>
+            <option value="">Select material</option>
+            {(form.category === "Other" || !form.category
+              ? allMaterials
+              : materialsByCategory[form.category] || allMaterials
+            ).map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </label>
 
         <label>

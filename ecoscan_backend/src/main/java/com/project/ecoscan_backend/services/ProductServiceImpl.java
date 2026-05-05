@@ -85,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
         return new SustainabilityReportDTO(
                 savedProduct.getId(),
                 savedProduct.getName(),
+                savedProduct.getCategory(),
                 carbon,
                 shadowCost,
                 ecoScore,
@@ -191,6 +192,7 @@ public class ProductServiceImpl implements ProductService {
         return new SustainabilityReportDTO(
                 product.getId(),
                 product.getName(),
+                product.getCategory(),
                 carbon,
                 shadowCost,
                 ecoScore,

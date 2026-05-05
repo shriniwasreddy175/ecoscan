@@ -5,7 +5,12 @@ import {
   fetchProductHistory,
   fetchProductReportById,
 } from "../api/productApi";
-import { addToLocalHistory, getLocalHistoryWithLimit } from "../utils/localHistoryUtils";
+import {
+  addToLocalHistory,
+  clearLocalHistory,
+  deleteLocalHistoryItem,
+  getLocalHistoryWithLimit,
+} from "../utils/localHistoryUtils";
 import {
   calculateCarbon,
   calculateWaterFootprint,
@@ -43,18 +48,14 @@ export function useProductAnalyzer() {
   const auth = useAuth();
 
   const loadHistory = async (limit = 30) => {
-    if (!auth?.user?.id) {
-      setHistoryLoading(true);
-      try {
-        const items = getLocalHistoryWithLimit(limit);
-        setHistory(Array.isArray(items) ? items : []);
-      } finally {
-        setHistoryLoading(false);
-      }
-      return;
-    }
     setHistoryLoading(true);
     try {
+      if (!auth?.user?.id) {
+        const items = getLocalHistoryWithLimit(limit);
+        setHistory(Array.isArray(items) ? items : []);
+        return;
+      }
+
       const items = await fetchProductHistory(limit, auth?.user?.id);
       setHistory(Array.isArray(items) ? items : []);
     } catch (err) {
@@ -96,11 +97,22 @@ export function useProductAnalyzer() {
 
   const clearHistory = () => {
     if (!auth?.user?.id) {
+      clearLocalHistory();
       setHistory([]);
       return;
     }
-    // DB-backed history: clear button in UI can be disabled or repurposed later.
+
     setHistory([]);
+  };
+
+  const deleteHistoryItem = async (itemId) => {
+    if (auth?.user?.id) {
+      setError("Delete is available for guest local history only.");
+      return;
+    }
+
+    deleteLocalHistoryItem(itemId);
+    await loadHistory();
   };
 
   const runAnalysis = async () => {
@@ -136,10 +148,8 @@ export function useProductAnalyzer() {
 
       let report;
       if (auth?.user?.id) {
-        // Logged in: send to backend
         report = await analyzeProduct(payload, auth?.user?.id);
       } else {
-        // Not logged in: calculate locally and save to localStorage
         const carbon = calculateCarbon(payload.weight, 10);
         const water = calculateWaterFootprint(payload.weight, payload.material);
         const energy = calculateEnergy(payload.weight);
@@ -147,7 +157,13 @@ export function useProductAnalyzer() {
         const recyclingScore = calculateRecyclingScore(payload.material);
         const ecoScore = calculateEcoScore(carbon);
         const shadowCost = calculateShadowCost(carbon);
-        const overallScore = calculateOverallScore(carbon, water, energy, transport, recyclingScore);
+        const overallScore = calculateOverallScore(
+          carbon,
+          water,
+          energy,
+          transport,
+          recyclingScore
+        );
 
         report = {
           id: Date.now(),
@@ -155,45 +171,32 @@ export function useProductAnalyzer() {
           productName: payload.name,
           name: payload.name,
           category: payload.category,
-          ecoScore: ecoScore,
-          carbonFootprint: carbon,
-          overallSustainabilityScore: overallScore,
-          shadowCost: shadowCost,
-          waterFootprint: water,
-          energyConsumption: energy,
-          transportEmission: transport,
-          water: water,
-          energy: energy,
-          transport: transport,
-          recyclingScore: recyclingScore,
-        };
-        addToLocalHistory({
-          id: report.id,
-          productName: report.productName,
-          productId: report.productId,
-          category: report.category,
           price: payload.price,
           weight: payload.weight,
           material: payload.material,
           transportDistance: payload.transportDistance,
           description: payload.description,
-          ecoScore: report.ecoScore,
-          carbonFootprint: report.carbonFootprint,
-          shadowCost: report.shadowCost,
-          waterFootprint: report.waterFootprint,
-          energyConsumption: report.energyConsumption,
-          transportEmission: report.transportEmission,
-          water: report.water,
-          energy: report.energy,
-          transport: report.transport,
-          recyclingScore: report.recyclingScore,
-          overallSustainabilityScore: report.overallSustainabilityScore,
+          ecoScore,
+          carbonFootprint: carbon,
+          overallSustainabilityScore: overallScore,
+          shadowCost,
+          waterFootprint: water,
+          energyConsumption: energy,
+          transportEmission: transport,
+          water,
+          energy,
+          transport,
+          recyclingScore,
+          sdg12Impact: "Responsible Consumption",
+          sdg13Impact: "Moderate Impact",
+          sdg9Impact: "Efficient Industry",
           createdAt: new Date().toISOString(),
-        });
-      }
-      setResult(report);
+        };
 
-      // Refresh history after new analysis
+        report = addToLocalHistory(report);
+      }
+
+      setResult(report);
       await loadHistory();
     } catch (err) {
       setError(err.message || "Failed to analyze product.");
@@ -216,6 +219,7 @@ export function useProductAnalyzer() {
     runAnalysis,
     applyHistoryItem,
     clearHistory,
+    deleteHistoryItem,
     setError,
     setResult,
   };

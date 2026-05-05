@@ -3,8 +3,10 @@ import ResultsPanel from "../components/analyzer/ResultsPanel";
 import ReportHistory from "../components/analyzer/ReportHistory";
 import HistoryTrendChart from "../components/analyzer/HistoryTrendChart";
 import { useProductAnalyzer } from "../hooks/useProductAnalyzer";
+import { useAuth } from "../hooks/useAuth";
 
 function AnalyzerPage() {
+  const auth = useAuth();
   const {
     form,
     loading,
@@ -17,10 +19,14 @@ function AnalyzerPage() {
     resetForm,
     runAnalysis,
     applyHistoryItem,
+    deleteHistoryItem,
+    clearHistory,
     setError,
     setResult,
     setForm,
   } = useProductAnalyzer();
+
+  const isGuest = !auth?.user?.id;
 
   const fillSampleData = () => {
     setForm({
@@ -59,6 +65,8 @@ function AnalyzerPage() {
           history={history}
           loading={historyLoading}
           onLoadItem={applyHistoryItem}
+          onDeleteItem={isGuest ? deleteHistoryItem : null}
+          onClearHistory={isGuest ? clearHistory : null}
         />
       </div>
 

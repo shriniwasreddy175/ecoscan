@@ -14,12 +14,15 @@ VALUES
 ('PVC', 6.0),
 ('Polypropylene', 5.0),
 ('Bioplastic', 1.8),
+('Plastic', 5.2),
 
 -- Metals
 ('Aluminium', 8.5),
 ('Recycled Aluminium', 2.0),
 ('Copper', 4.0),
 ('Iron', 2.0),
+('Metal', 4.5),
+('Stainless Steel', 6.0),
 
 -- Wood & Paper
 ('Plywood', 1.2),
@@ -32,6 +35,7 @@ VALUES
 ('Glass', 1.5),
 ('Silicon', 3.0),
 ('Lithium', 15.0),
+('Ceramic', 1.8),
 
 -- Packaging
 ('Packaging Plastic', 5.5),
@@ -40,5 +44,7 @@ VALUES
 -- Others
 ('Rubber', 3.0),
 ('Leather', 10.0),
-('Synthetic Leather', 6.5)
+('Synthetic Leather', 6.5),
+('Fabric', 6.2),
+('Foam', 2.5)
 ON CONFLICT DO NOTHING;

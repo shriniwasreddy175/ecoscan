@@ -33,29 +33,13 @@ export const fetchProductHistory = async (limit = 30, userId = null) => {
 };
 
 export const fetchProductReportById = async (id, userId = null) => {
-  // Try to get from local storage first if no userId
   if (!userId) {
     const localItem = getLocalHistoryById(id);
     if (localItem) {
-      // Return a full local report using the same field names as the backend
-      return Promise.resolve({
-        productId: localItem.productId ?? localItem.id,
-        productName: localItem.productName || localItem.name,
-        carbonFootprint: localItem.carbonFootprint,
-        shadowCost: localItem.shadowCost,
-        ecoScore: localItem.ecoScore,
-        waterFootprint: localItem.waterFootprint ?? localItem.water,
-        energyConsumption: localItem.energyConsumption ?? localItem.energy,
-        transportEmission: localItem.transportEmission ?? localItem.transport,
-        recyclingScore: localItem.recyclingScore,
-        overallSustainabilityScore: localItem.overallSustainabilityScore,
-        sdg12Impact: localItem.sdg12Impact || "Responsible Consumption",
-        sdg13Impact: localItem.sdg13Impact || "Moderate Impact",
-        sdg9Impact: localItem.sdg9Impact || "Efficient Industry",
-      });
+      return Promise.resolve(localItem);
     }
   }
-  
+
   const response = await fetch(`${BASE_URL}/${id}/report`);
   if (!response.ok) {
     const errorText = await response.text();

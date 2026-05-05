@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { fetchProductHistory } from "../api/productApi";
-import { getLocalHistoryWithLimit } from "../utils/localHistoryUtils";
+import {
+  getLocalHistoryWithLimit,
+  normalizeLocalHistoryItem,
+} from "../utils/localHistoryUtils";
 import ComparisonTable from "../components/comparison/ComparisonTable";
 import ComparisonSelector from "../components/comparison/ComparisonSelector";
 
@@ -72,19 +75,7 @@ function ComparisonPage() {
             );
             if (!product) return null;
 
-            return {
-              id: product.id,
-              name: product.productName,
-              category: product.category,
-              ecoScore: product.ecoScore,
-              carbonFootprint: product.carbonFootprint,
-              overallSustainabilityScore: product.overallSustainabilityScore,
-              shadowCost: product.shadowCost || 0,
-              water: product.water || 0,
-              energy: product.energy || 0,
-              transport: product.transport || 0,
-              recyclingScore: product.recyclingScore || 0,
-            };
+            return normalizeLocalHistoryItem(product);
           })
           .filter((r) => r !== null);
 
