@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS public.products
     created_at timestamp without time zone,
     user_id bigint,
     CONSTRAINT products_pkey PRIMARY KEY (id),
-    CONSTRAINT fkdb050tk37qryv15hd932626th FOREIGN KEY (user_id)
+    CONSTRAINT fk_products_user FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
