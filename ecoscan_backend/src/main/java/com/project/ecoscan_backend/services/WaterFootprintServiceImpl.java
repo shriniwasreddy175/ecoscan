@@ -8,18 +8,11 @@ public class WaterFootprintServiceImpl implements WaterFootprintService {
     @Override
     public double calculateWaterFootprint(double weight, String material) {
 
-        double waterPerKg;
-
-        switch (material.toLowerCase()) {
-            case "cotton":
-                waterPerKg = 10000;
-                break;
-            case "polyester":
-                waterPerKg = 1000;
-                break;
-            default:
-                waterPerKg = 2000;
-        }
+        double waterPerKg = switch (material.toLowerCase()) {
+            case "cotton"    -> 10000;
+            case "polyester" -> 1000;
+            default          -> 2000;
+        };
 
         return weight * waterPerKg;
     }

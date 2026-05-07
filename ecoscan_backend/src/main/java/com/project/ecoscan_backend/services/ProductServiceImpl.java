@@ -158,16 +158,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private SustainabilityReportDTO buildReportFromSavedProduct(Product product) {
-        double carbon = product.getCarbonFootprint() != null
-                ? product.getCarbonFootprint()
+        Double carbonBoxed = product.getCarbonFootprint();
+        double carbon = (carbonBoxed != null)
+                ? carbonBoxed
                 : calculateCarbonFromMaterial(product);
 
-        double shadowCost = product.getShadowCost() != null
-                ? product.getShadowCost()
+        Double shadowCostBoxed = product.getShadowCost();
+        double shadowCost = (shadowCostBoxed != null)
+                ? shadowCostBoxed
                 : carbonCalculationService.calculateShadowCost(carbon);
 
-        int ecoScore = product.getEcoScore() != null
-                ? product.getEcoScore()
+        Integer ecoScoreBoxed = product.getEcoScore();
+        int ecoScore = (ecoScoreBoxed != null)
+                ? ecoScoreBoxed
                 : carbonCalculationService.calculateEcoScore(carbon);
 
         double water = waterFootprintService
