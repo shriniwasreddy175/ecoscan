@@ -20,9 +20,9 @@ export function useGamification() {
     const loadStats = async () => {
       let history = [];
       
-      if (auth?.user?.id) {
+      if (auth?.user?.userId) {
         // Logged in: fetch from DB
-        history = await fetchProductHistory(200, auth?.user?.id);
+        history = await fetchProductHistory(200, auth?.user?.userId);
       } else {
         // Not logged in: fetch from localStorage
         history = getLocalHistoryWithLimit(200);
@@ -44,7 +44,7 @@ export function useGamification() {
     return () => {
       cancelled = true;
     };
-  }, [auth?.user?.id]);
+  }, [auth?.user?.userId]);
 
   return { stats, loading, error };
 }

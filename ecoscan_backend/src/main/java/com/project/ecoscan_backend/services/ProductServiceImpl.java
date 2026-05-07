@@ -33,14 +33,14 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
 
     @Override
-    public SustainabilityReportDTO analyzeProduct(Product product, Long userId) {
+    public SustainabilityReportDTO analyzeProduct(Product product, String userId) {
 
         // Link product to user if userId provided
         if (userId != null) {
-            var user = userRepository.findById(userId)
+            var user = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "User not found with id: " + userId
+                            "User not found with user_id: " + userId
                     ));
             product.setUser(user);
         }
@@ -101,11 +101,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductHistoryItemDTO> getHistory(int limit, Long userId) {
+    public List<ProductHistoryItemDTO> getHistory(int limit, String userId) {
         int safeLimit = Math.max(1, Math.min(limit, 200));
 
         var productsStream = (userId != null)
-                ? productRepository.findAllByUserIdOrderByIdDesc(userId, PageRequest.of(0, safeLimit)).stream()
+                ? productRepository.findAllByUserUserIdOrderByIdDesc(userId, PageRequest.of(0, safeLimit)).stream()
                 : productRepository.findAllByOrderByIdDesc(PageRequest.of(0, safeLimit)).stream();
 
         return productsStream

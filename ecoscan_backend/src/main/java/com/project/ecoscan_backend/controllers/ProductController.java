@@ -31,13 +31,13 @@ public class ProductController {
 
     @PostMapping("/analyze")
     public SustainabilityReportDTO analyze(@RequestBody Product product,
-            @RequestParam(required = false) Long userId) {
+            @RequestParam(required = false) String userId) {
         return productService.analyzeProduct(product, userId);
     }
 
     @GetMapping("/history")
     public ResponseEntity<List<ProductHistoryItemDTO>> getHistory(
-            @RequestParam(defaultValue = "30") int limit, @RequestParam(required = false) Long userId) {
+            @RequestParam(defaultValue = "30") int limit, @RequestParam(required = false) String userId) {
         return ResponseEntity.ok(productService.getHistory(limit, userId));
     }
 

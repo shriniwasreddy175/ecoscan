@@ -1,13 +1,21 @@
 package com.project.ecoscan_backend.services;
 
-import com.project.ecoscan_backend.dtos.*;
-import com.project.ecoscan_backend.entities.User;
-import com.project.ecoscan_backend.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.text.Normalizer;
+import java.util.Locale;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.project.ecoscan_backend.dtos.AuthResponseDTO;
+import com.project.ecoscan_backend.dtos.LoginRequestDTO;
+import com.project.ecoscan_backend.dtos.SignupRequestDTO;
+import com.project.ecoscan_backend.dtos.UserProfileDTO;
+import com.project.ecoscan_backend.entities.User;
+import com.project.ecoscan_backend.repositories.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +37,7 @@ public class UserServiceImpl implements UserService {
         user.setPhone(request.getPhone());
         user.setOrganization(request.getOrganization());
         user.setRole(request.getRole() != null ? request.getRole() : "USER");
+        user.setUserId(generateUserId(request.getFullName()));
 
         User saved = userRepository.save(user);
 
@@ -79,6 +88,7 @@ public class UserServiceImpl implements UserService {
     private UserProfileDTO toProfileDTO(User user) {
         return new UserProfileDTO(
                 user.getId(),
+                user.getUserId(),
                 user.getFullName(),
                 user.getEmail(),
                 user.getPhone(),
@@ -87,5 +97,32 @@ public class UserServiceImpl implements UserService {
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
+    }
+
+    private String generateUserId(String fullName) {
+        String baseUserId = normalizeUserId(fullName);
+        String candidateUserId = baseUserId;
+        int suffix = 2;
+
+        while (userRepository.existsByUserId(candidateUserId)) {
+            candidateUserId = baseUserId + "-" + suffix;
+            suffix++;
+        }
+
+        return candidateUserId;
+    }
+
+    private String normalizeUserId(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return "user";
+        }
+
+        String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-+|-+$", "");
+
+        return normalized.isBlank() ? "user" : normalized;
     }
 }

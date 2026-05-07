@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class UserProfileDTO {
     private Long id;
+    private String userId;
     private String fullName;
     private String email;
     private String phone;
@@ -14,10 +15,11 @@ public class UserProfileDTO {
 
     public UserProfileDTO() {}
 
-    public UserProfileDTO(Long id, String fullName, String email, String phone,
+    public UserProfileDTO(Long id, String userId, String fullName, String email, String phone,
                           String organization, String role,
                           LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.userId = userId;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
@@ -29,6 +31,9 @@ public class UserProfileDTO {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }

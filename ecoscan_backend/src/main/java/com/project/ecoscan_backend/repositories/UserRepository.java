@@ -1,11 +1,14 @@
 package com.project.ecoscan_backend.repositories;
 
-import com.project.ecoscan_backend.entities.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.project.ecoscan_backend.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+    Optional<User> findByUserId(String userId);
+    boolean existsByUserId(String userId);
 }

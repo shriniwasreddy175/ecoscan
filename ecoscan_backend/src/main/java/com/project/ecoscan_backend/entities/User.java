@@ -42,6 +42,9 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "user_id", nullable = false, unique = true, length = 150)
+    private String userId;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

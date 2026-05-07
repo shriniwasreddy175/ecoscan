@@ -19,9 +19,9 @@ function ComparisonPage() {
 
   const loadHistory = async () => {
     try {
-      if (auth?.user?.id) {
+      if (auth?.user?.userId) {
         // Logged in: fetch from DB
-        const items = await fetchProductHistory(50, auth?.user?.id);
+        const items = await fetchProductHistory(50, auth?.user?.userId);
         setHistory(Array.isArray(items) ? items : []);
       } else {
         // Not logged in: fetch from localStorage
@@ -51,7 +51,7 @@ function ComparisonPage() {
     setError("");
 
     try {
-      if (auth?.user?.id) {
+      if (auth?.user?.userId) {
         // Logged in: use backend API
         const response = await fetch(
           "http://localhost:8181/ecoscan/api/products/compare",

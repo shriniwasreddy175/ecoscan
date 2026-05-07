@@ -50,13 +50,13 @@ export function useProductAnalyzer() {
   const loadHistory = async (limit = 30) => {
     setHistoryLoading(true);
     try {
-      if (!auth?.user?.id) {
+      if (!auth?.user?.userId) {
         const items = getLocalHistoryWithLimit(limit);
         setHistory(Array.isArray(items) ? items : []);
         return;
       }
 
-      const items = await fetchProductHistory(limit, auth?.user?.id);
+      const items = await fetchProductHistory(limit, auth?.user?.userId);
       setHistory(Array.isArray(items) ? items : []);
     } catch (err) {
       setError(err.message || "Failed to load history.");
@@ -67,7 +67,7 @@ export function useProductAnalyzer() {
 
   useEffect(() => {
     loadHistory();
-  }, [auth?.user?.id]);
+  }, [auth?.user?.userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,7 +86,7 @@ export function useProductAnalyzer() {
       setLoading(true);
       setError("");
 
-      const report = await fetchProductReportById(productId, auth?.user?.id);
+      const report = await fetchProductReportById(productId, auth?.user?.userId);
       setResult(report);
     } catch (err) {
       setError(err.message || "Failed to load report from history.");
@@ -96,7 +96,7 @@ export function useProductAnalyzer() {
   };
 
   const clearHistory = () => {
-    if (!auth?.user?.id) {
+    if (!auth?.user?.userId) {
       clearLocalHistory();
       setHistory([]);
       return;
@@ -106,7 +106,7 @@ export function useProductAnalyzer() {
   };
 
   const deleteHistoryItem = async (itemId) => {
-    if (auth?.user?.id) {
+    if (auth?.user?.userId) {
       setError("Delete is available for guest local history only.");
       return;
     }
@@ -147,8 +147,8 @@ export function useProductAnalyzer() {
       }
 
       let report;
-      if (auth?.user?.id) {
-        report = await analyzeProduct(payload, auth?.user?.id);
+      if (auth?.user?.userId) {
+        report = await analyzeProduct(payload, auth?.user?.userId);
       } else {
         const carbon = calculateCarbon(payload.weight, 10);
         const water = calculateWaterFootprint(payload.weight, payload.material);

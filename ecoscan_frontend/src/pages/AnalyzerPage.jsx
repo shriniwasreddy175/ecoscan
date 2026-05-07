@@ -26,7 +26,7 @@ function AnalyzerPage() {
     setForm,
   } = useProductAnalyzer();
 
-  const isGuest = !auth?.user?.id;
+  const isGuest = !auth?.user?.userId;
 
   const fillSampleData = () => {
     setForm({

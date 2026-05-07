@@ -11,6 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
     List<Product> findAllByOrderByIdDesc(Pageable pageable);
-    List<Product> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
-    List<Product> findAllByUserIdOrderByIdDesc(Long userId, Pageable pageable);
+    List<Product> findAllByUserUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
+    List<Product> findAllByUserUserIdOrderByIdDesc(String userId, Pageable pageable);
 }
