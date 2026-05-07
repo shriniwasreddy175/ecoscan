@@ -14,6 +14,7 @@ import com.project.ecoscan_backend.dtos.SignupRequestDTO;
 import com.project.ecoscan_backend.dtos.UserProfileDTO;
 import com.project.ecoscan_backend.entities.User;
 import com.project.ecoscan_backend.repositories.UserRepository;
+import com.project.ecoscan_backend.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Override
     public AuthResponseDTO signup(SignupRequestDTO request) {
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
         User saved = userRepository.save(user);
 
         return new AuthResponseDTO(
+                jwtUtil.generateToken(saved.getUserId()),
                 "Signup successful",
                 toProfileDTO(saved)
         );
@@ -58,7 +61,11 @@ public class UserServiceImpl implements UserService {
                     HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        return new AuthResponseDTO("Login successful", toProfileDTO(user));
+        return new AuthResponseDTO(
+                jwtUtil.generateToken(user.getUserId()),
+                "Login successful",
+                toProfileDTO(user)
+        );
     }
 
     @Override
@@ -120,8 +127,8 @@ public class UserServiceImpl implements UserService {
         String normalized = Normalizer.normalize(fullName, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "")
                 .toLowerCase(Locale.ROOT)
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-+|-+$", "");
+                .replaceAll("[^a-z0-9]+", "_")
+                .replaceAll("^_+|_+$", "");
 
         return normalized.isBlank() ? "user" : normalized;
     }

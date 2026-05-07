@@ -51,12 +51,14 @@ export function useProductAnalyzer() {
     setHistoryLoading(true);
     try {
       if (!auth?.user?.userId) {
+        // Guest: use local history
         const items = getLocalHistoryWithLimit(limit);
         setHistory(Array.isArray(items) ? items : []);
         return;
       }
 
-      const items = await fetchProductHistory(limit, auth?.user?.userId);
+      // Authenticated: fetch from backend using JWT token (set via authHeaders in productApi)
+      const items = await fetchProductHistory(limit);
       setHistory(Array.isArray(items) ? items : []);
     } catch (err) {
       setError(err.message || "Failed to load history.");
@@ -86,7 +88,8 @@ export function useProductAnalyzer() {
       setLoading(true);
       setError("");
 
-      const report = await fetchProductReportById(productId, auth?.user?.userId);
+      const isGuest = !auth?.user?.userId;
+      const report = await fetchProductReportById(productId, isGuest);
       setResult(report);
     } catch (err) {
       setError(err.message || "Failed to load report from history.");
@@ -148,7 +151,8 @@ export function useProductAnalyzer() {
 
       let report;
       if (auth?.user?.userId) {
-        report = await analyzeProduct(payload, auth?.user?.userId);
+        // Authenticated: JWT token sent via authHeaders in productApi
+        report = await analyzeProduct(payload);
       } else {
         const carbon = calculateCarbon(payload.weight, 10);
         const water = calculateWaterFootprint(payload.weight, payload.material);

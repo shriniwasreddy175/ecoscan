@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { loginApi, signupApi, fetchProfileApi, updateProfileApi } from "../api/authApi";
+import { storeToken, clearToken, getToken } from "../api/apiClient";
 
 const AuthContext = createContext(null);
 
@@ -12,6 +13,7 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+  const [token, setToken] = useState(() => getToken());
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,9 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const res = await loginApi({ email, password });
+      // Store JWT token for authenticated API requests
+      storeToken(res.token);
+      setToken(res.token);
       setUser(res.user);
       setLoading(false);
       return res;
@@ -39,8 +44,10 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await signupApi(signupPayload);
-      // auto-login after signup
+      // auto-login after signup to get the JWT token
       const res = await loginApi({ email: signupPayload.email, password: signupPayload.password });
+      storeToken(res.token);
+      setToken(res.token);
       setUser(res.user);
       setLoading(false);
       return res;
@@ -51,6 +58,8 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    clearToken();
+    setToken(null);
     setUser(null);
   };
 
@@ -73,7 +82,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, refreshProfile, updateProfile }}>
+    <AuthContext.Provider value={{ user, token, loading, login, signup, logout, refreshProfile, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

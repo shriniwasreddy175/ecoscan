@@ -1,15 +1,17 @@
+import { authHeaders } from "./apiClient";
 import { getLocalHistoryById } from "../utils/localHistoryUtils";
 
 const BASE_URL = "http://localhost:8181/ecoscan/api/products";
 
-export const analyzeProduct = async (product, userId = null) => {
-  let url = `${BASE_URL}/analyze`;
-  if (userId) url += `?userId=${encodeURIComponent(userId)}`;
-  const response = await fetch(url, {
+/**
+ * Analyze a product. When the user is authenticated, the JWT token
+ * in the Authorization header identifies the user on the backend —
+ * no userId query param needed.
+ */
+export const analyzeProduct = async (product) => {
+  const response = await fetch(`${BASE_URL}/analyze`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: authHeaders(),
     body: JSON.stringify(product),
   });
 
@@ -21,10 +23,13 @@ export const analyzeProduct = async (product, userId = null) => {
   return response.json();
 };
 
-export const fetchProductHistory = async (limit = 30, userId = null) => {
-  let url = `${BASE_URL}/history?limit=${limit}`;
-  if (userId) url += `&userId=${encodeURIComponent(userId)}`;
-  const response = await fetch(url);
+/**
+ * Fetch product history. The backend resolves the user from the JWT token.
+ */
+export const fetchProductHistory = async (limit = 30) => {
+  const response = await fetch(`${BASE_URL}/history?limit=${limit}`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || "Failed to fetch product history");
@@ -32,15 +37,21 @@ export const fetchProductHistory = async (limit = 30, userId = null) => {
   return response.json();
 };
 
-export const fetchProductReportById = async (id, userId = null) => {
-  if (!userId) {
+/**
+ * Fetch a single product report by ID.
+ * Falls back to local history for guest users.
+ */
+export const fetchProductReportById = async (id, isGuest = false) => {
+  if (isGuest) {
     const localItem = getLocalHistoryById(id);
     if (localItem) {
       return Promise.resolve(localItem);
     }
   }
 
-  const response = await fetch(`${BASE_URL}/${id}/report`);
+  const response = await fetch(`${BASE_URL}/${id}/report`, {
+    headers: authHeaders(),
+  });
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(errorText || "Failed to fetch report by product ID");

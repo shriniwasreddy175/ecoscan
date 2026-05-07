@@ -3,6 +3,7 @@ package com.project.ecoscan_backend.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,13 +32,22 @@ public class ProductController {
 
     @PostMapping("/analyze")
     public SustainabilityReportDTO analyze(@RequestBody Product product,
-            @RequestParam(required = false) String userId) {
+            Authentication authentication) {
+        String userId = null;
+        if (authentication != null) {
+            userId = authentication.getName();
+        }
         return productService.analyzeProduct(product, userId);
     }
 
     @GetMapping("/history")
     public ResponseEntity<List<ProductHistoryItemDTO>> getHistory(
-            @RequestParam(defaultValue = "30") int limit, @RequestParam(required = false) String userId) {
+            @RequestParam(defaultValue = "30") int limit,
+            Authentication authentication) {
+        String userId = null;
+        if (authentication != null) {
+            userId = authentication.getName();
+        }
         return ResponseEntity.ok(productService.getHistory(limit, userId));
     }
 
