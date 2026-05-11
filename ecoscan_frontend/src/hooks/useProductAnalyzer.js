@@ -21,6 +21,7 @@ import {
   calculateRecyclingScore,
   calculateOverallScore,
 } from "../utils/calculationUtils";
+import { generateRecommendations } from "../utils/recommendationUtils";
 
 const initialForm = {
   name: "",
@@ -90,7 +91,13 @@ export function useProductAnalyzer() {
 
       const isGuest = !auth?.user?.userId;
       const report = await fetchProductReportById(productId, isGuest);
-      setResult(report);
+      setResult({
+        ...report,
+        recommendations:
+          Array.isArray(report?.recommendations) && report.recommendations.length > 0
+            ? report.recommendations
+            : generateRecommendations(report),
+      });
     } catch (err) {
       setError(err.message || "Failed to load report from history.");
     } finally {
@@ -196,6 +203,8 @@ export function useProductAnalyzer() {
           sdg9Impact: "Efficient Industry",
           createdAt: new Date().toISOString(),
         };
+
+        report.recommendations = generateRecommendations(report);
 
         report = addToLocalHistory(report);
       }

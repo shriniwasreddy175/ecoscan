@@ -2,6 +2,7 @@ import ProductForm from "../components/analyzer/ProductForm";
 import ResultsPanel from "../components/analyzer/ResultsPanel";
 import ReportHistory from "../components/analyzer/ReportHistory";
 import HistoryTrendChart from "../components/analyzer/HistoryTrendChart";
+import ImpactChart from "../components/analyzer/ImpactChart";
 import { useProductAnalyzer } from "../hooks/useProductAnalyzer";
 import { useAuth } from "../hooks/useAuth";
 
@@ -44,18 +45,22 @@ function AnalyzerPage() {
   return (
     <section className="page-section">
       <div className="split-grid">
-        <ProductForm
-          form={form}
-          loading={loading}
-          error={error}
-          onChange={handleChange}
-          onSubmit={runAnalysis}
-          onFillSample={fillSampleData}
-          onReset={() => {
-            resetForm();
-            setResult(null);
-          }}
-        />
+        <div className="left-column">
+          <ProductForm
+            form={form}
+            loading={loading}
+            error={error}
+            onChange={handleChange}
+            onSubmit={runAnalysis}
+            onFillSample={fillSampleData}
+            onReset={() => {
+              resetForm();
+              setResult(null);
+            }}
+          />
+          
+          <ImpactChart report={result} />
+        </div>
 
         <ResultsPanel result={result} progressValue={progressValue} />
       </div>

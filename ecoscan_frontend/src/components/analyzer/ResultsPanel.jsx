@@ -1,35 +1,33 @@
-import ImpactChart from "./ImpactChart";
 import { exportReportAsCSV, exportReportAsPDF } from "../../utils/exportReport";
 
 function ResultsPanel({ result, progressValue }) {
   return (
-    <>
-      <section className="card">
-        <div className="card-header card-header-row">
-          <div>
-            <span className="section-tag">Results</span>
-            <h2>Sustainability Report</h2>
-          </div>
-
-          <div className="export-actions">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => exportReportAsCSV(result)}
-              disabled={!result}
-            >
-              Export CSV
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => exportReportAsPDF(result)}
-              disabled={!result}
-            >
-              Export PDF
-            </button>
-          </div>
+    <section className="card">
+      <div className="card-header card-header-row">
+        <div>
+          <span className="section-tag">Results</span>
+          <h2>Sustainability Report</h2>
         </div>
+
+        <div className="export-actions">
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => exportReportAsCSV(result)}
+            disabled={!result}
+          >
+            Export CSV
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => exportReportAsPDF(result)}
+            disabled={!result}
+          >
+            Export PDF
+          </button>
+        </div>
+      </div>
 
         {!result ? (
           <p className="empty-text">Run an analysis to view report data.</p>
@@ -69,12 +67,49 @@ function ResultsPanel({ result, progressValue }) {
                 <strong>{result.sdg9Impact ?? result.sdg9}</strong>
               </div>
             </div>
+
+            <div className="recommendation-wrap">
+              <div className="recommendation-header">
+                <h3>Recommendation Explainer</h3>
+                <span>Top 2 actions ranked by expected score gain</span>
+              </div>
+
+              {!Array.isArray(result.recommendations) || result.recommendations.length === 0 ? (
+                <p className="empty-text">No recommendations available for this report.</p>
+              ) : (
+                <div className="recommendation-grid">
+                  {result.recommendations.slice(0, 2).map((rec, idx) => (
+                    <article className="recommendation-card" key={`${rec.title}-${idx}`}>
+                      <div className="recommendation-card-top">
+                        <strong>{rec.title}</strong>
+                        <span className={`recommendation-priority recommendation-priority-${(rec.priority || "low").toLowerCase()}`}>
+                          {rec.priority || "Low"}
+                        </span>
+                      </div>
+
+                      <p className="recommendation-because">
+                        <strong>Because:</strong> {rec.because}
+                      </p>
+                      <p>
+                        <strong>Expected impact:</strong> {rec.expectedImpact}
+                      </p>
+                      <p>
+                        <strong>Potential score gain:</strong> +{rec.potentialScoreGain}
+                      </p>
+
+                      <ul>
+                        {(rec.actionSteps || []).slice(0, 3).map((step, stepIndex) => (
+                          <li key={`${rec.title}-step-${stepIndex}`}>{step}</li>
+                        ))}
+                      </ul>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
           </>
         )}
-      </section>
-
-      <ImpactChart report={result} />
-    </>
+    </section>
   );
 }
 

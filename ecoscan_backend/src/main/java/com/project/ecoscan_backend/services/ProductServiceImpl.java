@@ -29,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final RecyclingImpactService recyclingImpactService;
     private final SustainabilityIndexService sustainabilityIndexService;
     private final SDGImpactService sdgImpactService;
+        private final RecommendationService recommendationService;
 
     private final UserRepository userRepository;
 
@@ -76,6 +77,17 @@ public class ProductServiceImpl implements ProductService {
         String sdg12 = sdgImpactService.calculateSDG12(ecoScore);
         String sdg9 = sdgImpactService.calculateSDG9(shadowCost);
 
+        var recommendations = recommendationService.generateRecommendations(
+                carbon,
+                water,
+                energy,
+                transport,
+                recyclingScore,
+                product.getMaterial(),
+                product.getTransportDistance(),
+                ecoScore
+        );
+
         product.setCarbonFootprint(carbon);
         product.setShadowCost(shadowCost);
         product.setEcoScore(ecoScore);
@@ -96,7 +108,8 @@ public class ProductServiceImpl implements ProductService {
                 overallScore,
                 sdg12,
                 sdg13,
-                sdg9
+                sdg9,
+                recommendations
         );
     }
 
@@ -192,6 +205,17 @@ public class ProductServiceImpl implements ProductService {
         String sdg12 = sdgImpactService.calculateSDG12(ecoScore);
         String sdg9 = sdgImpactService.calculateSDG9(shadowCost);
 
+        var recommendations = recommendationService.generateRecommendations(
+                carbon,
+                water,
+                energy,
+                transport,
+                recyclingScore,
+                product.getMaterial(),
+                product.getTransportDistance(),
+                ecoScore
+        );
+
         return new SustainabilityReportDTO(
                 product.getId(),
                 product.getName(),
@@ -206,7 +230,8 @@ public class ProductServiceImpl implements ProductService {
                 overallScore,
                 sdg12,
                 sdg13,
-                sdg9
+                                sdg9,
+                                recommendations
         );
     }
 
