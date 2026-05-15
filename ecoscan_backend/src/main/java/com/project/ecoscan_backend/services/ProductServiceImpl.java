@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.project.ecoscan_backend.dtos.ProductHistoryItemDTO;
 import com.project.ecoscan_backend.dtos.SustainabilityReportDTO;
 import com.project.ecoscan_backend.entities.Product;
+import com.project.ecoscan_backend.entities.User;
 import com.project.ecoscan_backend.repositories.ProductRepository;
 import com.project.ecoscan_backend.repositories.UserRepository;
 import com.project.ecoscan_backend.utils.MaterialNormalizer;
@@ -93,6 +94,14 @@ public class ProductServiceImpl implements ProductService {
         product.setEcoScore(ecoScore);
 
         Product savedProduct = productRepository.save(product);
+
+        // Award EcoPoints to the user based on overall sustainability score
+        if (product.getUser() != null) {
+            User linkedUser = product.getUser();
+            int pointsEarned = pointsForScore(overallScore);
+            linkedUser.setEcoPoints(linkedUser.getEcoPoints() + pointsEarned);
+            userRepository.save(linkedUser);
+        }
 
         return new SustainabilityReportDTO(
                 savedProduct.getId(),
@@ -246,5 +255,14 @@ public class ProductServiceImpl implements ProductService {
                 ));
 
         return carbonCalculationService.calculateCarbon(product.getWeight(), factor.getEmissionPerKg());
+    }
+
+    /** Mirrors the frontend gamificationUtils.getPointsForScore logic. */
+    private int pointsForScore(int overallScore) {
+        if (overallScore >= 80) return 20;
+        if (overallScore >= 60) return 15;
+        if (overallScore >= 40) return 10;
+        if (overallScore >= 20) return 5;
+        return 2;
     }
 }

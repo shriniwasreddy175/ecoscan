@@ -2,13 +2,12 @@ package com.project.ecoscan_backend.dtos;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class RecommendationDTO {
     private String title;
     private String priority;
@@ -16,4 +15,16 @@ public class RecommendationDTO {
     private String expectedImpact;
     private int potentialScoreGain;
     private List<String> actionSteps;
+
+    @Setter
+    private String rewrittenExplanation;
+
+    public RecommendationDTO(String title, String priority, String because, String expectedImpact, int potentialScoreGain, List<String> actionSteps) {
+        this.title = title;
+        this.priority = priority;
+        this.because = because;
+        this.expectedImpact = expectedImpact;
+        this.potentialScoreGain = potentialScoreGain;
+        this.actionSteps = actionSteps;
+    }
 }

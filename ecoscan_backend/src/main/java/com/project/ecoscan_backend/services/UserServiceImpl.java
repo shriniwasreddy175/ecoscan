@@ -1,14 +1,18 @@
 package com.project.ecoscan_backend.services;
 
 import java.text.Normalizer;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.project.ecoscan_backend.dtos.AuthResponseDTO;
+import com.project.ecoscan_backend.dtos.LeaderboardEntryDTO;
 import com.project.ecoscan_backend.dtos.LoginRequestDTO;
 import com.project.ecoscan_backend.dtos.SignupRequestDTO;
 import com.project.ecoscan_backend.dtos.UserProfileDTO;
@@ -90,6 +94,42 @@ public class UserServiceImpl implements UserService {
 
         User saved = userRepository.save(user);
         return toProfileDTO(saved);
+    }
+
+    @Override
+    public List<LeaderboardEntryDTO> getLeaderboard(int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 100));
+        AtomicInteger rankCounter = new AtomicInteger(1);
+
+        return userRepository
+                .findAllByOrderByEcoPointsDesc(PageRequest.of(0, safeLimit))
+                .stream()
+                .map(user -> new LeaderboardEntryDTO(
+                        rankCounter.getAndIncrement(),
+                        user.getUserId(),
+                        user.getFullName(),
+                        user.getOrganization(),
+                        user.getEcoPoints(),
+                        resolveLevel(user.getEcoPoints()),
+                        resolveLevelIcon(user.getEcoPoints())
+                ))
+                .toList();
+    }
+
+    private String resolveLevel(int points) {
+        if (points >= 1000) return "Sustainability Champion";
+        if (points >= 500)  return "Eco Warrior";
+        if (points >= 250)  return "Green Guardian";
+        if (points >= 100)  return "Eco Explorer";
+        return "Seedling";
+    }
+
+    private String resolveLevelIcon(int points) {
+        if (points >= 1000) return "🏆";
+        if (points >= 500)  return "🌍";
+        if (points >= 250)  return "♻️";
+        if (points >= 100)  return "🌿";
+        return "🌱";
     }
 
     private UserProfileDTO toProfileDTO(User user) {

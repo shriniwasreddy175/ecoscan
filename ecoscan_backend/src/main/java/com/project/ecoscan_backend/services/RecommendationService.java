@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.project.ecoscan_backend.dtos.RecommendationDTO;
 
 @Service
 public class RecommendationService {
+
+        private final ExplanationRewriteService explanationRewriteService;
+
+        @Autowired
+        public RecommendationService(ExplanationRewriteService explanationRewriteService) {
+                this.explanationRewriteService = explanationRewriteService;
+        }
 
     public List<RecommendationDTO> generateRecommendations(
             double carbon,
@@ -128,10 +136,14 @@ public class RecommendationService {
             ));
         }
 
-        return recommendations.stream()
+        List<RecommendationDTO> top = recommendations.stream()
                 .sorted(Comparator.comparingInt(RecommendationDTO::getPotentialScoreGain).reversed())
                 .limit(3)
                 .toList();
+
+        explanationRewriteService.rewriteRecommendations(top);
+
+        return top;
     }
 
     private static String round(double value) {

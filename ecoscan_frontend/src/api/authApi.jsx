@@ -52,3 +52,14 @@ export async function updateProfileApi(email, profile) {
   }
   return res.json();
 }
+
+export async function fetchLeaderboardApi(limit = 50) {
+  const res = await fetch(`${USERS_BASE}/leaderboard?limit=${limit}`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to fetch leaderboard");
+  }
+  return res.json();
+}

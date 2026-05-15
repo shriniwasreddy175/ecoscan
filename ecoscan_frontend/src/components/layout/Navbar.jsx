@@ -25,6 +25,7 @@ function Navbar({ theme, onToggleTheme }) {
         <NavItem to="/analyzer">Analyzer</NavItem>
         <NavItem to="/compare">Compare</NavItem>
         <NavItem to="/gamification">Rewards</NavItem>
+        {user && <NavItem to="/leaderboard">Leaderboard</NavItem>}
         <NavItem to="/about">About</NavItem>
       </nav>
 

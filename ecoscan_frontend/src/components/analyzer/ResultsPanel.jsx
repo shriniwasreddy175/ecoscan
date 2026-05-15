@@ -1,4 +1,5 @@
 import { exportReportAsCSV, exportReportAsPDF } from "../../utils/exportReport";
+import WhatIfSimulator from "./WhatIfSimulator";
 
 function ResultsPanel({ result, progressValue }) {
   return (
@@ -87,9 +88,13 @@ function ResultsPanel({ result, progressValue }) {
                         </span>
                       </div>
 
-                      <p className="recommendation-because">
-                        <strong>Because:</strong> {rec.because}
-                      </p>
+                      {rec.rewrittenExplanation ? (
+                        <p className="recommendation-rewrite">{rec.rewrittenExplanation}</p>
+                      ) : (
+                        <p className="recommendation-because">
+                          <strong>Because:</strong> {rec.because}
+                        </p>
+                      )}
                       <p>
                         <strong>Expected impact:</strong> {rec.expectedImpact}
                       </p>
@@ -106,6 +111,10 @@ function ResultsPanel({ result, progressValue }) {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div style={{ marginTop: "0.8rem" }}>
+              <WhatIfSimulator initialReport={result} />
             </div>
           </>
         )}

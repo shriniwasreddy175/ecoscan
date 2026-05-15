@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import PageContainer from "./components/layout/PageContainer";
 import HomePage from "./pages/HomePage";
@@ -10,8 +10,15 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
 import GamificationPage from "./pages/GamificationPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
 import "./App.css";
-import { AuthProvider } from "./hooks/useAuth";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+
+/** Redirects unauthenticated users to /login, preserving the intended destination. */
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" replace />;
+}
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("ecoscan-theme") || "light");
@@ -37,6 +44,14 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/gamification" element={<GamificationPage />} />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <LeaderboardPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </PageContainer>
       </div>

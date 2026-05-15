@@ -6,6 +6,8 @@ function safeMaterial(material) {
   return material && String(material).trim() ? material : "current material";
 }
 
+import { rewriteRecommendation } from "./explanationUtils";
+
 export function generateRecommendations(report = {}) {
   const carbon = Number(report.carbonFootprint ?? 0);
   const water = Number(report.waterFootprint ?? report.water ?? 0);
@@ -127,5 +129,7 @@ export function generateRecommendations(report = {}) {
     });
   }
 
-  return recommendations.sort((a, b) => b.potentialScoreGain - a.potentialScoreGain).slice(0, 3);
+  const top = recommendations.sort((a, b) => b.potentialScoreGain - a.potentialScoreGain).slice(0, 3);
+  return top.map((r) => ({ ...r, rewrittenExplanation: rewriteRecommendation(r) }));
 }
+
