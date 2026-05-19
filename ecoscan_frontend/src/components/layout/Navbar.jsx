@@ -23,6 +23,7 @@ function Navbar({ theme, onToggleTheme }) {
       <nav className="nav-links">
         <NavItem to="/">Home</NavItem>
         <NavItem to="/analyzer">Analyzer</NavItem>
+        <NavItem to="/scan">Scan</NavItem>
         <NavItem to="/compare">Compare</NavItem>
         <NavItem to="/gamification">Rewards</NavItem>
         {user && <NavItem to="/leaderboard">Leaderboard</NavItem>}

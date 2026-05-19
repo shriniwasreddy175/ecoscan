@@ -55,6 +55,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/ecoscan/api/auth/**").permitAll()
+                        .requestMatchers("/ecoscan/api/products/lookup").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())

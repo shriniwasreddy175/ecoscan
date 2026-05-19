@@ -58,3 +58,34 @@ export const fetchProductReportById = async (id, isGuest = false) => {
   }
   return response.json();
 };
+
+/**
+ * Lookup a product by barcode.
+ * Returns a ScannedProductDTO or null (404).
+ */
+export const lookupByBarcode = async (barcode) => {
+  const response = await fetch(
+    `${BASE_URL}/lookup?barcode=${encodeURIComponent(barcode)}`
+  );
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Barcode lookup failed");
+  }
+  return response.json();
+};
+
+/**
+ * Search products by name.
+ * Returns an array of ScannedProductDTO (may be empty).
+ */
+export const searchProductsByName = async (name) => {
+  const response = await fetch(
+    `${BASE_URL}/lookup?name=${encodeURIComponent(name)}`
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || "Product name search failed");
+  }
+  return response.json();
+};

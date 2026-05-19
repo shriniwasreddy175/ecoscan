@@ -160,6 +160,11 @@ export function useProductAnalyzer() {
       if (auth?.user?.userId) {
         // Authenticated: JWT token sent via authHeaders in productApi
         report = await analyzeProduct(payload);
+        // Ensure recommendations are always present — fall back to local generation
+        // if the backend returned an empty array
+        if (!Array.isArray(report?.recommendations) || report.recommendations.length === 0) {
+          report = { ...report, recommendations: generateRecommendations(report) };
+        }
       } else {
         const carbon = calculateCarbon(payload.weight, 10);
         const water = calculateWaterFootprint(payload.weight, payload.material);
@@ -206,7 +211,94 @@ export function useProductAnalyzer() {
 
         report.recommendations = generateRecommendations(report);
 
-        report = addToLocalHistory(report);
+        // Save to localStorage for history persistence, but keep the
+        // in-memory report (with recommendations) as the displayed result.
+        const savedItem = addToLocalHistory(report);
+        // Merge the assigned id back so history lookups work, but keep recommendations
+        report = { ...report, id: savedItem.id, productId: savedItem.productId };
+      }
+
+      setResult(report);
+      await loadHistory();
+    } catch (err) {
+      setError(err.message || "Failed to analyze product.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Analyze a pre-built payload directly (used by ScanPage).
+   * Skips the form-reading step and validates the payload itself.
+   */
+  const runAnalysisWithPayload = async (payload) => {
+    setError("");
+    setLoading(true);
+    setResult(null);
+
+    try {
+      if (
+        !payload.name ||
+        !payload.category ||
+        !payload.material ||
+        isNaN(payload.weight) || payload.weight <= 0 ||
+        isNaN(payload.transportDistance) || payload.transportDistance < 0
+      ) {
+        throw new Error("Please fill in Name, Category, Material, Weight, and Transport Distance.");
+      }
+
+      let report;
+      if (auth?.user?.userId) {
+        report = await analyzeProduct(payload);
+        // Ensure recommendations are always present — fall back to local generation
+        // if the backend returned an empty array
+        if (!Array.isArray(report?.recommendations) || report.recommendations.length === 0) {
+          report = { ...report, recommendations: generateRecommendations(report) };
+        }
+      } else {
+        const carbon = calculateCarbon(payload.weight, 10);
+        const water = calculateWaterFootprint(payload.weight, payload.material);
+        const energy = calculateEnergy(payload.weight);
+        const transport = calculateTransportEmission(payload.transportDistance);
+        const recyclingScore = calculateRecyclingScore(payload.material);
+        const ecoScore = calculateEcoScore(carbon);
+        const shadowCost = calculateShadowCost(carbon);
+        const overallScore = calculateOverallScore(carbon, water, energy, transport, recyclingScore);
+
+        report = {
+          id: Date.now(),
+          productId: Date.now(),
+          productName: payload.name,
+          name: payload.name,
+          category: payload.category,
+          price: payload.price,
+          weight: payload.weight,
+          material: payload.material,
+          transportDistance: payload.transportDistance,
+          description: payload.description,
+          ecoScore,
+          carbonFootprint: carbon,
+          overallSustainabilityScore: overallScore,
+          shadowCost,
+          waterFootprint: water,
+          energyConsumption: energy,
+          transportEmission: transport,
+          water,
+          energy,
+          transport,
+          recyclingScore,
+          sdg12Impact: "Responsible Consumption",
+          sdg13Impact: "Moderate Impact",
+          sdg9Impact: "Efficient Industry",
+          createdAt: new Date().toISOString(),
+        };
+        report.recommendations = generateRecommendations(report);
+
+        // Save to localStorage for history persistence, but keep the
+        // in-memory report (with recommendations) as the displayed result.
+        const savedItem = addToLocalHistory(report);
+        // Merge the assigned id back so history lookups work, but keep recommendations
+        report = { ...report, id: savedItem.id, productId: savedItem.productId };
       }
 
       setResult(report);
@@ -230,6 +322,7 @@ export function useProductAnalyzer() {
     handleChange,
     resetForm,
     runAnalysis,
+    runAnalysisWithPayload,
     applyHistoryItem,
     clearHistory,
     deleteHistoryItem,

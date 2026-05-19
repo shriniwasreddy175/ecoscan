@@ -30,20 +30,21 @@ public class ProductServiceImpl implements ProductService {
     private final RecyclingImpactService recyclingImpactService;
     private final SustainabilityIndexService sustainabilityIndexService;
     private final SDGImpactService sdgImpactService;
-        private final RecommendationService recommendationService;
-
+    private final RecommendationService recommendationService;
     private final UserRepository userRepository;
+
+    // -------------------------------------------------------------------------
+    // analyzeProduct
+    // -------------------------------------------------------------------------
 
     @Override
     public SustainabilityReportDTO analyzeProduct(Product product, String userId) {
 
-        // Link product to user if userId provided
         if (userId != null) {
             var user = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
-                            "User not found with user_id: " + userId
-                    ));
+                            "User not found with user_id: " + userId));
             product.setUser(user);
         }
 
@@ -51,139 +52,111 @@ public class ProductServiceImpl implements ProductService {
 
         var factor = carbonFactorService
                 .getByMaterial(normalizedMaterial)
-                .orElseThrow(() -> new RuntimeException("Material not supported: " + product.getMaterial()));
+                .orElseThrow(() -> new RuntimeException(
+                        "Material not supported: " + product.getMaterial()));
 
-        double carbon = carbonCalculationService.calculateCarbon(product.getWeight(), factor.getEmissionPerKg());
+        double carbon      = carbonCalculationService.calculateCarbon(product.getWeight(), factor.getEmissionPerKg());
+        double shadowCost  = carbonCalculationService.calculateShadowCost(carbon);
+        int    ecoScore    = carbonCalculationService.calculateEcoScore(carbon);
 
-        double shadowCost = carbonCalculationService.calculateShadowCost(carbon);
-
-        int ecoScore = carbonCalculationService.calculateEcoScore(carbon);
-
-        double water = waterFootprintService
-                .calculateWaterFootprint(product.getWeight(), product.getMaterial());
-
-        double energy = energyConsumptionService
-                .calculateEnergy(product.getWeight());
-
-        double transport = transportImpactService
-                .calculateTransportEmission(product.getTransportDistance());
-
-        int recyclingScore = recyclingImpactService
-                .calculateRecyclingScore(product.getMaterial());
-
-        int overallScore = sustainabilityIndexService
-                .calculateOverallScore(carbon, water, energy, transport, recyclingScore);
+        double water          = waterFootprintService.calculateWaterFootprint(product.getWeight(), product.getMaterial());
+        double energy         = energyConsumptionService.calculateEnergy(product.getWeight());
+        double transport      = transportImpactService.calculateTransportEmission(product.getTransportDistance());
+        int    recyclingScore = recyclingImpactService.calculateRecyclingScore(product.getMaterial());
+        int    overallScore   = sustainabilityIndexService.calculateOverallScore(carbon, water, energy, transport, recyclingScore);
 
         String sdg13 = sdgImpactService.calculateSDG13(carbon);
         String sdg12 = sdgImpactService.calculateSDG12(ecoScore);
-        String sdg9 = sdgImpactService.calculateSDG9(shadowCost);
+        String sdg9  = sdgImpactService.calculateSDG9(shadowCost);
 
         var recommendations = recommendationService.generateRecommendations(
-                carbon,
-                water,
-                energy,
-                transport,
-                recyclingScore,
-                product.getMaterial(),
-                product.getTransportDistance(),
-                ecoScore
-        );
+                carbon, water, energy, transport, recyclingScore,
+                product.getMaterial(), product.getTransportDistance(), ecoScore);
 
         product.setCarbonFootprint(carbon);
         product.setShadowCost(shadowCost);
         product.setEcoScore(ecoScore);
 
-        Product savedProduct = productRepository.save(product);
+        Product saved = productRepository.save(product);
 
-        // Award EcoPoints to the user based on overall sustainability score
-        if (product.getUser() != null) {
-            User linkedUser = product.getUser();
-            int pointsEarned = pointsForScore(overallScore);
-            linkedUser.setEcoPoints(linkedUser.getEcoPoints() + pointsEarned);
+        if (saved.getUser() != null) {
+            User linkedUser = saved.getUser();
+            linkedUser.setEcoPoints(linkedUser.getEcoPoints() + pointsForScore(overallScore));
             userRepository.save(linkedUser);
         }
 
-        return new SustainabilityReportDTO(
-                savedProduct.getId(),
-                savedProduct.getName(),
-                savedProduct.getCategory(),
-                carbon,
-                shadowCost,
-                ecoScore,
-                water,
-                energy,
-                transport,
-                recyclingScore,
-                overallScore,
-                sdg12,
-                sdg13,
-                sdg9,
-                recommendations
-        );
+        SustainabilityReportDTO report = new SustainabilityReportDTO(
+                saved.getId(), saved.getName(), saved.getCategory(),
+                carbon, shadowCost, ecoScore,
+                water, energy, transport, recyclingScore, overallScore,
+                sdg12, sdg13, sdg9, recommendations);
+
+        // Attach raw inputs so the frontend What-if Simulator has the actual values
+        report.setWeight(saved.getWeight());
+        report.setMaterial(saved.getMaterial());
+        report.setTransportDistance(saved.getTransportDistance());
+        return report;
     }
+
+    // -------------------------------------------------------------------------
+    // getHistory
+    // -------------------------------------------------------------------------
 
     @Override
     public List<ProductHistoryItemDTO> getHistory(int limit, String userId) {
         int safeLimit = Math.max(1, Math.min(limit, 200));
 
-        var productsStream = (userId != null)
+        var stream = (userId != null)
                 ? productRepository.findAllByUserUserIdOrderByIdDesc(userId, PageRequest.of(0, safeLimit)).stream()
                 : productRepository.findAllByOrderByIdDesc(PageRequest.of(0, safeLimit)).stream();
 
-        return productsStream
-                .map(product -> {
-                    SustainabilityReportDTO report = buildReportFromSavedProduct(product);
-
-                    return new ProductHistoryItemDTO(
-                            product.getId(),
-                            product.getName(),
-                            product.getCategory(),
-                            product.getCreatedAt(),
-                            report.getOverallSustainabilityScore(),
-                            report.getEcoScore(),
-                            report.getCarbonFootprint()
-                    );
-                })
-                .toList();
+        return stream.map(product -> {
+            SustainabilityReportDTO r = buildReportFromSavedProduct(product);
+            return new ProductHistoryItemDTO(
+                    product.getId(), product.getName(), product.getCategory(),
+                    product.getCreatedAt(),
+                    r.getOverallSustainabilityScore(), r.getEcoScore(), r.getCarbonFootprint());
+        }).toList();
     }
+
+    // -------------------------------------------------------------------------
+    // getReportByProductId
+    // -------------------------------------------------------------------------
 
     @Override
     public SustainabilityReportDTO getReportByProductId(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Product not found with id: " + productId
-                ));
-
+                        HttpStatus.NOT_FOUND, "Product not found with id: " + productId));
         return buildReportFromSavedProduct(product);
     }
+
+    // -------------------------------------------------------------------------
+    // compareProducts
+    // -------------------------------------------------------------------------
 
     @Override
     public List<SustainabilityReportDTO> compareProducts(List<Long> productIds) {
         if (productIds == null || productIds.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product IDs list cannot be empty.");
         }
-
-        int limit = Math.min(productIds.size(), 50);
-        List<Long> safeIds = productIds.stream().limit(limit).toList();
-
-        return safeIds.stream()
+        return productIds.stream()
+                .limit(50)
                 .map(id -> {
-                    try {
-                        return getReportByProductId(id);
-                    } catch (Exception e) {
-                        return null;
-                    }
+                    try { return getReportByProductId(id); }
+                    catch (Exception e) { return null; }
                 })
-                .filter(report -> report != null)
+                .filter(r -> r != null)
                 .toList();
     }
 
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
     private SustainabilityReportDTO buildReportFromSavedProduct(Product product) {
         Double carbonBoxed = product.getCarbonFootprint();
-        double carbon = (carbonBoxed != null)
-                ? carbonBoxed
-                : calculateCarbonFromMaterial(product);
+        double carbon = (carbonBoxed != null) ? carbonBoxed : calculateCarbonFromMaterial(product);
 
         Double shadowCostBoxed = product.getShadowCost();
         double shadowCost = (shadowCostBoxed != null)
@@ -195,65 +168,39 @@ public class ProductServiceImpl implements ProductService {
                 ? ecoScoreBoxed
                 : carbonCalculationService.calculateEcoScore(carbon);
 
-        double water = waterFootprintService
-                .calculateWaterFootprint(product.getWeight(), product.getMaterial());
-
-        double energy = energyConsumptionService
-                .calculateEnergy(product.getWeight());
-
-        double transport = transportImpactService
-                .calculateTransportEmission(product.getTransportDistance());
-
-        int recyclingScore = recyclingImpactService
-                .calculateRecyclingScore(product.getMaterial());
-
-        int overallScore = sustainabilityIndexService
-                .calculateOverallScore(carbon, water, energy, transport, recyclingScore);
+        double water          = waterFootprintService.calculateWaterFootprint(product.getWeight(), product.getMaterial());
+        double energy         = energyConsumptionService.calculateEnergy(product.getWeight());
+        double transport      = transportImpactService.calculateTransportEmission(product.getTransportDistance());
+        int    recyclingScore = recyclingImpactService.calculateRecyclingScore(product.getMaterial());
+        int    overallScore   = sustainabilityIndexService.calculateOverallScore(carbon, water, energy, transport, recyclingScore);
 
         String sdg13 = sdgImpactService.calculateSDG13(carbon);
         String sdg12 = sdgImpactService.calculateSDG12(ecoScore);
-        String sdg9 = sdgImpactService.calculateSDG9(shadowCost);
+        String sdg9  = sdgImpactService.calculateSDG9(shadowCost);
 
         var recommendations = recommendationService.generateRecommendations(
-                carbon,
-                water,
-                energy,
-                transport,
-                recyclingScore,
-                product.getMaterial(),
-                product.getTransportDistance(),
-                ecoScore
-        );
+                carbon, water, energy, transport, recyclingScore,
+                product.getMaterial(), product.getTransportDistance(), ecoScore);
 
-        return new SustainabilityReportDTO(
-                product.getId(),
-                product.getName(),
-                product.getCategory(),
-                carbon,
-                shadowCost,
-                ecoScore,
-                water,
-                energy,
-                transport,
-                recyclingScore,
-                overallScore,
-                sdg12,
-                sdg13,
-                                sdg9,
-                                recommendations
-        );
+        SustainabilityReportDTO report = new SustainabilityReportDTO(
+                product.getId(), product.getName(), product.getCategory(),
+                carbon, shadowCost, ecoScore,
+                water, energy, transport, recyclingScore, overallScore,
+                sdg12, sdg13, sdg9, recommendations);
+
+        // Attach raw inputs so the frontend What-if Simulator has the actual values
+        report.setWeight(product.getWeight());
+        report.setMaterial(product.getMaterial());
+        report.setTransportDistance(product.getTransportDistance());
+        return report;
     }
 
     private double calculateCarbonFromMaterial(Product product) {
         String normalizedMaterial = MaterialNormalizer.normalize(product.getMaterial());
-
         var factor = carbonFactorService
                 .getByMaterial(normalizedMaterial)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Material not supported: " + product.getMaterial()
-                ));
-
+                        HttpStatus.BAD_REQUEST, "Material not supported: " + product.getMaterial()));
         return carbonCalculationService.calculateCarbon(product.getWeight(), factor.getEmissionPerKg());
     }
 

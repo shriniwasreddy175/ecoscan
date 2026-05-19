@@ -1383,3 +1383,301 @@ textarea:focus {
     width: 90px;
   }
 }
+
+/* ═══════════════════════════════════════════════
+   Scan / Lookup page styles
+   ═══════════════════════════════════════════════ */
+
+/* ── Search bar ── */
+.scan-search-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scan-mode-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.scan-mode-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.scan-mode-btn:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.scan-mode-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent-2);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.scan-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.scan-input {
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  color: var(--text);
+  background: var(--surface-2);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scan-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
+}
+
+.scan-search-btn {
+  white-space: nowrap;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.scan-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+/* Spinner inside button */
+.scan-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: scan-spin 0.7s linear infinite;
+}
+
+@keyframes scan-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Results list (name search) ── */
+.scan-results-list {
+  margin-bottom: 1.25rem;
+}
+
+.scan-result-items {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scan-result-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.scan-result-item:hover {
+  background: var(--accent-soft);
+  transform: translateY(-1px);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.scan-result-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scan-result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.scan-result-thumb-placeholder {
+  font-size: 1.6rem;
+}
+
+.scan-result-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.scan-result-name {
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scan-result-meta {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+}
+
+.scan-result-arrow {
+  color: var(--text-soft);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ── Incomplete data badge ── */
+.scan-incomplete-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+html[data-theme="dark"] .scan-incomplete-badge {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+/* ── Edit form card ── */
+.scan-edit-card {
+  /* inherits .card */
+}
+
+.scan-edit-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.scan-edit-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.scan-edit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.scan-source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+/* ── Empty state ── */
+.scan-empty-state {
+  text-align: center;
+  padding: 40px 28px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.scan-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.scan-empty-state h3 {
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+.scan-how-list {
+  text-align: left;
+  margin: 0 auto 16px;
+  padding-left: 1.4rem;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.scan-how-list strong {
+  color: var(--text);
+}
+
+.scan-empty-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+@media (max-width: 720px) {
+  .scan-input-row {
+    flex-direction: column;
+  }
+
+  .scan-search-btn {
+    width: 100%;
+  }
+
+  .scan-edit-header-row {
+    flex-direction: column-reverse;
+  }
+
+  .scan-edit-thumb {
+    width: 56px;
+    height: 56px;
+  }
+}

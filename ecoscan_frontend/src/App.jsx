@@ -11,6 +11,7 @@ import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
 import GamificationPage from "./pages/GamificationPage";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import ScanPage from "./pages/ScanPage";
 import "./App.css";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 
@@ -44,6 +45,7 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/gamification" element={<GamificationPage />} />
+            <Route path="/scan" element={<ScanPage />} />
             <Route
               path="/leaderboard"
               element={

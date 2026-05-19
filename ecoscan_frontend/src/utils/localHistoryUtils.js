@@ -54,6 +54,8 @@ export function normalizeLocalHistoryItem(item) {
     sdg13Impact: item?.sdg13Impact ?? "Moderate Impact",
     sdg9Impact: item?.sdg9Impact ?? "Efficient Industry",
     createdAt: item?.createdAt ?? new Date().toISOString(),
+    // Preserve recommendations so they survive the localStorage round-trip
+    recommendations: Array.isArray(item?.recommendations) ? item.recommendations : [],
   };
 }
 
