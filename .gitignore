@@ -1,6 +1,7 @@
 # Ignore environment files with secrets
 /ecoscan_backend/.env
 /ecoscan_frontend/.env
+/ecoscan_frontend/.env.production
 
 # Node modules
 /ecoscan_frontend/node_modules/

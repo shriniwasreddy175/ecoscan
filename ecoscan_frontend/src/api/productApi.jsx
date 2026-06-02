@@ -1,7 +1,8 @@
 import { authHeaders } from "./apiClient";
 import { getLocalHistoryById } from "../utils/localHistoryUtils";
+import { API_BASE_URL } from "../config/api";
 
-const BASE_URL = "http://localhost:8181/ecoscan/api/products";
+const BASE_URL = `${API_BASE_URL}/ecoscan/api/products`;
 
 /**
  * Analyze a product. When the user is authenticated, the JWT token

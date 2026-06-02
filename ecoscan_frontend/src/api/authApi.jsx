@@ -1,7 +1,8 @@
 import { authHeaders } from "./apiClient";
+import { API_BASE_URL } from "../config/api";
 
-const AUTH_BASE = "http://localhost:8181/ecoscan/api/auth";
-const USERS_BASE = "http://localhost:8181/ecoscan/api/users";
+const AUTH_BASE = `${API_BASE_URL}/ecoscan/api/auth`;
+const USERS_BASE = `${API_BASE_URL}/ecoscan/api/users`;
 
 export async function signupApi(payload) {
   const res = await fetch(`${AUTH_BASE}/signup`, {
