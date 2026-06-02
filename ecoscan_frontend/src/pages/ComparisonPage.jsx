@@ -8,9 +8,10 @@ import {
 import ComparisonTable from "../components/comparison/ComparisonTable";
 import ComparisonSelector from "../components/comparison/ComparisonSelector";
 import { API_BASE_URL } from "../config/api";
+import { authHeaders } from "../api/apiClient";
 
 const BASE_URL = `${API_BASE_URL}/ecoscan/api/products`;
-
+  
 function ComparisonPage() {
   const [history, setHistory] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -59,7 +60,7 @@ function ComparisonPage() {
         const response = await fetch(`${BASE_URL}/compare`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(),
             body: JSON.stringify({ productIds: selectedProducts }),
           }
         );
