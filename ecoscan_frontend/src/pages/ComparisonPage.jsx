@@ -7,6 +7,9 @@ import {
 } from "../utils/localHistoryUtils";
 import ComparisonTable from "../components/comparison/ComparisonTable";
 import ComparisonSelector from "../components/comparison/ComparisonSelector";
+import { API_BASE_URL } from "../config/api";
+
+const BASE_URL = `${API_BASE_URL}/ecoscan/api/products`;
 
 function ComparisonPage() {
   const [history, setHistory] = useState([]);
@@ -53,8 +56,7 @@ function ComparisonPage() {
     try {
       if (auth?.user?.userId) {
         // Logged in: use backend API
-        const response = await fetch(
-          "http://localhost:8181/ecoscan/api/products/compare",
+        const response = await fetch(`${BASE_URL}/compare`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
