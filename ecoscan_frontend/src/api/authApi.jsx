@@ -1,6 +1,8 @@
 import { authHeaders } from "./apiClient";
 import { API_BASE_URL } from "../config/api";
 
+console.log("API URL:", import.meta.env.VITE_API_URL);
+
 const AUTH_BASE = `${API_BASE_URL}/ecoscan/api/auth`;
 const USERS_BASE = `${API_BASE_URL}/ecoscan/api/users`;
 
