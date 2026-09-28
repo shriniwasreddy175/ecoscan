@@ -252,8 +252,7 @@ npm run dev
 ## 👨‍💻 Author
 
 **Shriniwas Mare**
-Diploma in Computer Engineering
-Government Polytechnic Pune
+Full Stack Developer
 
 ---
 
