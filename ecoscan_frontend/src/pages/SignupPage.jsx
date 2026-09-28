@@ -29,12 +29,26 @@ function SignupPage() {
   };
 
   return (
-    <section className="page-section">
-      <span className="eyebrow">Account</span>
-      <h1>Sign Up</h1>
+    <section className="auth-page page-section">
+      <div className="auth-layout auth-layout-signup">
+        <aside className="auth-intro">
+          <span className="eyebrow">Join EcoScan</span>
+          <h1>Turn everyday products into measurable progress.</h1>
+          <p>Create an account to save your analyses, explore comparisons, and build a clearer view of the choices behind every product.</p>
+          <div className="auth-highlight">
+            <strong>One account. A better view of impact.</strong>
+            <span>Your product history stays ready whenever you return.</span>
+          </div>
+        </aside>
 
-      <div className="card" style={{ maxWidth: 640 }}>
-        <form onSubmit={handleSubmit} className="form-grid">
+        <div className="auth-card card">
+          <div className="auth-card-heading">
+            <span className="section-tag">Get started</span>
+            <h2>Sign up</h2>
+            <p>Set up your EcoScan account in a minute.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="form-grid auth-form">
           <label>
             Full name
             <input name="fullName" value={form.fullName} onChange={handleChange} required />
@@ -70,11 +84,12 @@ function SignupPage() {
 
           <div className="full-width form-actions">
             <button className="btn btn-primary" type="submit">Create account</button>
-            <Link className="btn btn-ghost" to="/login">Already have an account?</Link>
+            <Link className="btn btn-ghost" to="/login">I already have an account</Link>
           </div>
-        </form>
+          </form>
 
-        {error && <div className="alert error" style={{ marginTop: 14 }}>{error}</div>}
+          {error && <div className="alert error">{error}</div>}
+        </div>
       </div>
     </section>
   );
