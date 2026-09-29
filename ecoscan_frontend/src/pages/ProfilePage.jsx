@@ -218,44 +218,38 @@ export default function ProfilePage() {
   };
 
   return (
-    <section className="page-section">
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginBottom: 18 }}>
-        <div style={{ minWidth: 220 }}>
-          <span className="eyebrow">Account</span>
-          <h1 style={{ marginTop: 8 }}>Profile</h1>
+    <section className="profile-page page-section">
+      <div className="profile-heading">
+        <div>
+          <span className="eyebrow">Account center</span>
+          <h1>Profile</h1>
+          <p>Manage your identity and the details connected to your EcoScan account.</p>
+        </div>
+        <span className="profile-status"><span /> Account active</span>
+      </div>
 
-          <div className="card" style={{ marginTop: 16 }}>
-            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+      <div className="profile-layout">
+        <aside className="profile-summary card">
+          <div className="profile-summary-top">
               <div
-                style={{
-                  width: 84,
-                  height: 84,
-                  borderRadius: 16,
-                  background: avatarDataUrl ? `url(${avatarDataUrl}) center/cover` : "var(--surface-2)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 28,
-                  fontWeight: 800,
-                  color: "var(--text)",
-                  border: "1px solid var(--border)",
-                }}
+                className="profile-avatar"
+                style={{ background: avatarDataUrl ? `url(${avatarDataUrl}) center/cover` : undefined }}
                 title="Avatar"
               >
                 {!avatarDataUrl && <span>{initialsFromName(form?.fullName)}</span>}
               </div>
 
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, color: "var(--text)", fontSize: 16 }}>
+              <div className="profile-identity">
+                <div className="profile-name">
                   {form?.fullName || form?.email}
                 </div>
-                <div style={{ color: "var(--text-soft)", marginTop: 6 }}>{form?.email}</div>
+                <div className="profile-email">{form?.email}</div>
 
-                <div style={{ marginTop: 10, display: "flex", gap: 8 }}>
-                  <button className="btn btn-secondary" type="button" onClick={handleAvatarClick}>
-                    Change avatar
+                <div className="profile-avatar-actions">
+                  <button className="btn btn-secondary btn-sm" type="button" onClick={handleAvatarClick}>
+                    Change photo
                   </button>
-                  <button className="btn btn-ghost" type="button" onClick={handleAvatarRemove}>
+                  <button className="btn btn-ghost btn-sm" type="button" onClick={handleAvatarRemove}>
                     Remove
                   </button>
                 </div>
@@ -268,30 +262,27 @@ export default function ProfilePage() {
                   onChange={(e) => handleAvatarPick(e.target.files?.[0])}
                 />
               </div>
-            </div>
-
-            <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "center" }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                <span className="badge" style={{ background: "var(--accent-soft)", color: "var(--accent-2)", padding: "6px 10px", borderRadius: 999 }}>
-                  Role: {form?.role}
-                </span>
-              </div>
-
-              <div style={{ marginLeft: 8, color: "var(--text-soft)" }}>
-                <div>Joined: {formatDateTime(form?.createdAt)}</div>
-                <div>Updated: {formatDateTime(form?.updatedAt)}</div>
-              </div>
-            </div>
           </div>
-        </div>
 
-        <div style={{ flex: 1 }}>
-          <div className="card">
-            <div className="card-header">
-              <h2>Account Details</h2>
+          <div className="profile-meta">
+            <span className="profile-role">Role: {form?.role}</span>
+            <dl>
+              <div><dt>Joined</dt><dd>{formatDateTime(form?.createdAt)}</dd></div>
+              <div><dt>Updated</dt><dd>{formatDateTime(form?.updatedAt)}</dd></div>
+            </dl>
+          </div>
+        </aside>
+
+        <div className="profile-editor card">
+          <div className="card-header profile-card-header">
+            <div>
+              <span className="section-tag">Personal details</span>
+              <h2>Account details</h2>
             </div>
+            <span className="profile-readonly-note">Email is read-only</span>
+          </div>
 
-            <div className="form-grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="form-grid profile-form">
               <label>
                 Full name
                 <input name="fullName" value={form?.fullName ?? ""} onChange={(e) => setField("fullName", e.target.value)} />
@@ -311,9 +302,10 @@ export default function ProfilePage() {
                 Organization
                 <input name="organization" value={form?.organization ?? ""} onChange={(e) => setField("organization", e.target.value)} />
               </label>
-            </div>
+          </div>
 
-            <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+          <div className="profile-actions">
+            <div className="profile-primary-actions">
               <button className="btn btn-primary" onClick={handleSave} disabled={saving || !hasChanges()}>
                 {saving ? "Saving..." : "Save changes"}
               </button>
@@ -321,16 +313,16 @@ export default function ProfilePage() {
               <button className="btn btn-ghost" onClick={handleCancel} disabled={!hasChanges()}>
                 Cancel
               </button>
-
-              <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-                <button className="btn btn-ghost" onClick={refreshProfile}>Refresh</button>
-                <button className="btn btn-ghost" onClick={handleLogout}>Logout</button>
-              </div>
             </div>
 
-            {message && <div style={{ marginTop: 12, color: "var(--accent-2)" }}>{message}</div>}
-            {error && <div style={{ marginTop: 12 }} className="alert error">{error}</div>}
+            <div className="profile-secondary-actions">
+              <button className="btn btn-ghost" onClick={refreshProfile}>Refresh</button>
+              <button className="btn btn-ghost" onClick={handleLogout}>Logout</button>
+            </div>
           </div>
+
+          {message && <div className="profile-message">{message}</div>}
+          {error && <div className="alert error profile-error">{error}</div>}
         </div>
       </div>
     </section>
