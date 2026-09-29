@@ -165,10 +165,17 @@ function ReportHistory({ history, loading, onLoadItem, onDeleteItem, onClearHist
           <ul className="history-list history-list-scrollable">
             {filteredHistory.map((item) => (
               <li key={item.productId}>
-                <button
+                <div
                   className="history-item"
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onLoadItem(item)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onLoadItem(item);
+                    }
+                  }}
                 >
                   <div className="history-item-content">
                     <strong>{item.productName || "Unknown Product"}</strong>
@@ -198,7 +205,7 @@ function ReportHistory({ history, loading, onLoadItem, onDeleteItem, onClearHist
                       </button>
                     ) : null}
                   </div>
-                </button>
+                </div>
               </li>
             ))}
           </ul>

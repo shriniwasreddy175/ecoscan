@@ -52,8 +52,9 @@ export default function LeaderboardPage() {
       )}
 
       {!loading && !error && entries.length > 0 && (
-        <div className="card" style={{ marginTop: 20, padding: 0, overflow: "hidden" }}>
-          <table className="leaderboard-table">
+        <div className="card leaderboard-card" style={{ marginTop: 20, padding: 0 }}>
+          <div className="table-wrap leaderboard-table-wrap">
+            <table className="leaderboard-table">
             <thead>
               <tr>
                 <th className="leaderboard-th leaderboard-th--rank">Rank</th>
@@ -104,7 +105,8 @@ export default function LeaderboardPage() {
                 );
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       )}
 

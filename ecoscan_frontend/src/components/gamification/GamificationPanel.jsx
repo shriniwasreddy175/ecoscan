@@ -42,7 +42,7 @@ function GamificationPanel({ stats, loading, error }) {
       {/* ── Level card ─────────────────────────────────── */}
       <div className="gamification-level-card">
         <div className="gamification-level-icon">{level.icon}</div>
-        <div style={{ flex: 1 }}>
+        <div className="gamification-level-content">
           <div className="gamification-level-name">{level.name}</div>
           <div className="gamification-level-sub">
             {isMaxLevel

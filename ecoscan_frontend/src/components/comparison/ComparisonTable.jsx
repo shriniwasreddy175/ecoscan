@@ -61,11 +61,15 @@ function ComparisonTable({ results }) {
         </div>
       </div>
 
-      <div className="table-wrap">
+      <div className="table-wrap comparison-table-wrap">
+        <div className="comparison-table-scroll-note" aria-hidden="true">
+          <span>Swipe to compare products</span>
+          <span>← →</span>
+        </div>
         <table className="comparison-table">
           <thead>
             <tr>
-              <th>Metric</th>
+              <th className="metric-label metric-header-label">Metric</th>
               {results.map((r) => (
                 <th key={r.productId}>
                   <div className="comparison-head-cell">
